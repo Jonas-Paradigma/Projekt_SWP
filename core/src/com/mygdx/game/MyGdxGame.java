@@ -28,11 +28,11 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 		//Sprite Sheet animation
-		atlas = new TextureAtlas(Gdx.files.internal("animation/santa_idle.atlas"));
-		Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions("Armature_Idle");
+		atlas = new TextureAtlas(Gdx.files.internal("animations/maincharakter_stand.atlas"));
+		Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions("maincharakter");
 		animation = new Animation<>(0.01f, frames, Animation.PlayMode.LOOP);
 
-		atlas = new TextureAtlas(Gdx.files.internal("animation/santa_idle.atlas"));
+		atlas = new TextureAtlas(Gdx.files.internal("animation/maincharakter_stand.atlas"));
 
 
 
