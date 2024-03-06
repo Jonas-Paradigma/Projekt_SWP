@@ -46,10 +46,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		float backgroundOffsetX = backgroundScrollSpeed * 100; // Berechne den Hintergrundversatz basierend auf der Geschwindigkeit
 		backgroundOffsetX %= background.getWidth(); // Stelle sicher, dass der Hintergrund wiederholt wird
 
-		// Bewege den Spieler, wenn er fliegt
-		if (isPlayerFlying) {
-			playerPosition.y += 2; // Beispielbewegung nach oben
-		}
+		// Bewege den Spieler kontinuierlich nach unten
+		playerPosition.y -= 2;
 
 		// Fokussiere die Kamera auf den Spieler
 		camera.position.set(playerPosition.x + playerTexture.getWidth() / 2, playerPosition.y + playerTexture.getHeight() / 2, 0);
@@ -66,17 +64,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.end();
 
 		// Überprüfe Benutzerinteraktion
-		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-			if (!isPlayerFlying) {
-				isPlayerFlying = true; // Starte das Fliegen, wenn die Leertaste gedrückt wird
-			}
+		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+			playerPosition.y += 8; // Bewege den Spieler nach oben, solange die Leertaste gedrückt wird
 		}
 
 		// Stoppe das Fliegen, wenn der Spieler den oberen Bildschirmrand erreicht
 		if (playerPosition.y >= Gdx.graphics.getHeight() - playerTexture.getHeight()) {
-			isPlayerFlying = false;
+			playerPosition.y = Gdx.graphics.getHeight() - playerTexture.getHeight();
 		}
 	}
+
 
 	@Override
 	public void dispose() {
