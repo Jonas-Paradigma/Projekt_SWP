@@ -21,18 +21,18 @@ public class MyGdxGame extends ApplicationAdapter {
 	private TextureAtlas atlas;
 	private Animation<TextureRegion> animation;
 	float elapsedTime = 0.1f;
-	
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 
 
 		//Sprite Sheet animation
-		atlas = new TextureAtlas(Gdx.files.internal("animations/maincharakter_stand.atlas"));
+		atlas = new TextureAtlas(Gdx.files.internal(""));
 		Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions("maincharakter");
 		animation = new Animation<>(0.01f, frames, Animation.PlayMode.LOOP);
 
-		atlas = new TextureAtlas(Gdx.files.internal("animation/maincharakter_stand.atlas"));
+		atlas = new TextureAtlas(Gdx.files.internal(""));
 
 
 
@@ -46,7 +46,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(img, 0, 0);
 		batch.end();
 	}
-	
+
 	@Override
 	public void dispose () {
 		batch.dispose();
