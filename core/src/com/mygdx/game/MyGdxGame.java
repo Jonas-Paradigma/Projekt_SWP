@@ -44,8 +44,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		//Atlas laufanimation von dem Spieler
 		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
-		Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions("mainwalk1");
-		animation = new Animation<>(0.01f, frames, Animation.PlayMode.LOOP);
+		Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions("mainwalk");
+		animation = new Animation<>(0.09f, frames, Animation.PlayMode.LOOP);
 
 		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
 
