@@ -7,8 +7,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
@@ -22,6 +26,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int screenHeight;
 	private boolean gameStarted;
 
+
+
+	private TextureAtlas atlas;
+	private Animation<TextureRegion> animation;
+	float elapsedTime = 0.1f;
 	@Override
 	public void create() {
 		float w = Gdx.graphics.getWidth();
@@ -29,7 +38,17 @@ public class MyGdxGame extends ApplicationAdapter {
 		screenHeight = Gdx.graphics.getHeight();
 
 		camera = new OrthographicCamera(1, h / w);
+
+
 		batch = new SpriteBatch();
+
+		//Atlas laufanimation von dem Spieler
+		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
+		Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions("mainwalk1");
+		animation = new Animation<>(0.01f, frames, Animation.PlayMode.LOOP);
+
+		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
+
 		background = new Texture("images/Background1.png");
 		playerTexture = new Texture("images/0.png");
 		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0); // Startposition am Boden
@@ -46,11 +65,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
 		backgroundScrollSpeed += Gdx.graphics.getDeltaTime();
 		float backgroundOffsetX = backgroundScrollSpeed * 200;
 		backgroundOffsetX %= background.getWidth();
-
 
 		// Hier ändern wir die vertikale Position des Spielers basierend auf seiner vertikalen Geschwindigkeit
 		playerPosition.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
@@ -60,36 +77,43 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
+
+		// Zeichne den Hintergrund
 		for (int i = 0; i < 2; i++) {
 			batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
 		}
-		batch.draw(playerTexture, playerPosition.x, playerPosition.y);
 
-		// Grenze für den oberen Bildschirmrand
-		if (playerPosition.y >= screenHeight - playerTexture.getHeight()) {
-			playerPosition.y = screenHeight - playerTexture.getHeight();
+		// Berechne die nächste Frame der Animation
+		elapsedTime += Gdx.graphics.getDeltaTime();
+		TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
+
+		// Zeichne die Animation des Spielers
+		batch.draw(currentFrame, playerPosition.x, playerPosition.y);
+
+		batch.end();
+
+		// Grenzen für den oberen und unteren Bildschirmrand
+		if (playerPosition.y >= screenHeight - currentFrame.getRegionHeight()) {
+			playerPosition.y = screenHeight - currentFrame.getRegionHeight();
 			playerVerticalVelocity = 0; // Setze die vertikale Geschwindigkeit auf Null
 		}
-		// Grenze für den unteren Bildschirmrand
 		if (playerPosition.y <= 0) {
 			playerPosition.y = 0;
 			playerVerticalVelocity = 0; // Setze die vertikale Geschwindigkeit auf Null
 		}
 
-		batch.end();
-
+		// Ändere die vertikale Geschwindigkeit basierend auf der Leertaste
 		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-			// Ändere die vertikale Geschwindigkeit exponentiell, wenn die Leertaste gedrückt wird
 			playerVerticalVelocity += 500 * Gdx.graphics.getDeltaTime(); // Beschleunigung nach oben
 		} else {
-			// Reduziere die vertikale Geschwindigkeit exponentiell, wenn die Leertaste nicht gedrückt wird
 			playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime(); // Beschleunigung nach unten
 		}
 
-		// Begrenze die maximale Geschwindigkeit nach oben und unten
+		// Begrenze die vertikale Geschwindigkeit nach oben und unten
 		playerVerticalVelocity = Math.min(playerVerticalVelocity, 300); // Maximale Geschwindigkeit nach oben
 		playerVerticalVelocity = Math.max(playerVerticalVelocity, -300); // Maximale Geschwindigkeit nach unten
 	}
+
 
 	@Override
 	public void dispose() {
