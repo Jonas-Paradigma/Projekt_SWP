@@ -1,15 +1,14 @@
 package com.mygdx.game;
 
+import actors.Player;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import helper.imageHelper;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
@@ -21,22 +20,23 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float backgroundScrollSpeed;
 	private float playerVerticalVelocity; // Geschwindigkeit des Spielers in vertikaler Richtung
 	private int screenHeight;
+	private boolean gameStarted;
 
 	@Override
 	public void create() {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		screenHeight = Gdx.graphics.getHeight();
-		imageHelper ih = new imageHelper();
 
 		camera = new OrthographicCamera(1, h / w);
 		batch = new SpriteBatch();
 		background = new Texture("images/Background1.png");
 		playerTexture = new Texture("images/0.png");
-		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, h / 2 - playerTexture.getHeight() / 2);
+		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0); // Startposition am Boden
 		isPlayerFlying = false;
 		backgroundScrollSpeed = 2;
 		playerVerticalVelocity = 0; // Initialgeschwindigkeit des Spielers in vertikaler Richtung
+		gameStarted = false;
 
 		camera.setToOrtho(false, w, h);
 	}
@@ -45,6 +45,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void render() {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 
 		backgroundScrollSpeed += Gdx.graphics.getDeltaTime();
 		float backgroundOffsetX = backgroundScrollSpeed * 200;
