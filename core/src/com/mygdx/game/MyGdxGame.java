@@ -49,7 +49,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
 
-		background = new Texture("images/Background1.png");
+		background = new Texture("images/Background_new.png");
 		playerTexture = new Texture("images/0.png");
 		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0); // Startposition am Boden
 		isPlayerFlying = false;
