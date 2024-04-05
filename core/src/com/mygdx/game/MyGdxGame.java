@@ -1,13 +1,18 @@
 package com.mygdx.game;
 
+import actors.Player;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
@@ -17,61 +22,96 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Vector2 playerPosition;
 	private boolean isPlayerFlying;
 	private float backgroundScrollSpeed;
+	private float playerVerticalVelocity; // Geschwindigkeit des Spielers in vertikaler Richtung
+	private int screenHeight;
+	private boolean gameStarted;
 
+
+
+	private TextureAtlas atlas;
+	private Animation<TextureRegion> animation;
+	float elapsedTime = 0.1f;
 	@Override
 	public void create() {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
+		screenHeight = Gdx.graphics.getHeight();
 
 		camera = new OrthographicCamera(1, h / w);
-		batch = new SpriteBatch();
-		background = new Texture("images/Background1.png"); // Lade das Hintergrundbild
-		playerTexture = new Texture("images/0.png"); // Lade das Spielerbild
-		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, h / 2 - playerTexture.getHeight() / 2); // Setze die Anfangsposition des Spielers in die Mitte des Bildschirms
-		isPlayerFlying = false;
-		backgroundScrollSpeed = 2; // Hintergrundscrollgeschwindigkeit
 
-		// Setze die Kamera auf die Bildschirmgröße
+
+		batch = new SpriteBatch();
+
+		//Atlas laufanimation von dem Spieler
+		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
+		Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions("mainwalk");
+		animation = new Animation<>(0.09f, frames, Animation.PlayMode.LOOP);
+
+		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
+
+		background = new Texture("images/Background_new.png");
+		playerTexture = new Texture("images/0.png");
+		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0); // Startposition am Boden
+		isPlayerFlying = false;
+		backgroundScrollSpeed = 2;
+		playerVerticalVelocity = 0; // Initialgeschwindigkeit des Spielers in vertikaler Richtung
+		gameStarted = false;
+
 		camera.setToOrtho(false, w, h);
 	}
 
 	@Override
 	public void render() {
-		// Clear screen
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		// Bewege den Hintergrund
-		backgroundScrollSpeed += Gdx.graphics.getDeltaTime(); // Aktualisiere die Scrollgeschwindigkeit
-		float backgroundOffsetX = backgroundScrollSpeed * 100; // Berechne den Hintergrundversatz basierend auf der Geschwindigkeit
-		backgroundOffsetX %= background.getWidth(); // Stelle sicher, dass der Hintergrund wiederholt wird
+		backgroundScrollSpeed += Gdx.graphics.getDeltaTime();
+		float backgroundOffsetX = backgroundScrollSpeed * 200;
+		backgroundOffsetX %= background.getWidth();
 
-		// Bewege den Spieler kontinuierlich nach unten
-		playerPosition.y -= 2;
+		// Hier ändern wir die vertikale Position des Spielers basierend auf seiner vertikalen Geschwindigkeit
+		playerPosition.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
 
-		// Fokussiere die Kamera auf den Spieler
-		camera.position.set(playerPosition.x + playerTexture.getWidth() / 2, playerPosition.y + playerTexture.getHeight() / 2, 0);
+		camera.position.set(background.getWidth() / 2, screenHeight / 2, 0);
 		camera.update();
 
-		// Zeichne das Hintergrundbild
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		// Zeichne den Hintergrund mehrmals nebeneinander, um eine nahtlose Wiederholung zu erzeugen
+
+		// Zeichne den Hintergrund
 		for (int i = 0; i < 2; i++) {
 			batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
 		}
-		batch.draw(playerTexture, playerPosition.x, playerPosition.y);
+
+		// Berechne die nächste Frame der Animation
+		elapsedTime += Gdx.graphics.getDeltaTime();
+		TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
+
+		// Zeichne die Animation des Spielers
+		batch.draw(currentFrame, playerPosition.x, playerPosition.y);
+
 		batch.end();
 
-		// Überprüfe Benutzerinteraktion
-		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-			playerPosition.y += 8; // Bewege den Spieler nach oben, solange die Leertaste gedrückt wird
+		// Grenzen für den oberen und unteren Bildschirmrand
+		if (playerPosition.y >= screenHeight - currentFrame.getRegionHeight()) {
+			playerPosition.y = screenHeight - currentFrame.getRegionHeight();
+			playerVerticalVelocity = 0; // Setze die vertikale Geschwindigkeit auf Null
+		}
+		if (playerPosition.y <= 0) {
+			playerPosition.y = 0;
+			playerVerticalVelocity = 0; // Setze die vertikale Geschwindigkeit auf Null
 		}
 
-		// Stoppe das Fliegen, wenn der Spieler den oberen Bildschirmrand erreicht
-		if (playerPosition.y >= Gdx.graphics.getHeight() - playerTexture.getHeight()) {
-			playerPosition.y = Gdx.graphics.getHeight() - playerTexture.getHeight();
+		// Ändere die vertikale Geschwindigkeit basierend auf der Leertaste
+		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+			playerVerticalVelocity += 500 * Gdx.graphics.getDeltaTime(); // Beschleunigung nach oben
+		} else {
+			playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime(); // Beschleunigung nach unten
 		}
+
+		// Begrenze die vertikale Geschwindigkeit nach oben und unten
+		playerVerticalVelocity = Math.min(playerVerticalVelocity, 300); // Maximale Geschwindigkeit nach oben
+		playerVerticalVelocity = Math.max(playerVerticalVelocity, -300); // Maximale Geschwindigkeit nach unten
 	}
 
 
