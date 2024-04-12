@@ -20,6 +20,10 @@ public class Player {
         boundary = new Rectangle(x, y, width, height);
     }
 
+    public static boolean collideRectangle(Rectangle boundary) {
+        return false;
+    }
+
     public void update(float delta) {
         // Hier könnten Sie die Position des Spielers aktualisieren
     }
