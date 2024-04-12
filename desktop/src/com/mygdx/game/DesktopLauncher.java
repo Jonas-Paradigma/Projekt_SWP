@@ -11,7 +11,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(75);
-		config.setWindowedMode(1000, 250);
+		config.setWindowedMode(1500, 500);
 		config.setTitle("JetPack_Joyride");
 		new Lwjgl3Application(new MyGdxGame(), config);
 	}

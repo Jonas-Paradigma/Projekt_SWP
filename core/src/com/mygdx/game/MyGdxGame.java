@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import actors.Coin;
 import actors.Player;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -13,9 +14,15 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import helper.imageHelper;
+
+import java.util.ArrayList;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
+	private FitViewport viewport;
 	private SpriteBatch batch;
 	private Texture background;
 	private Texture playerTexture;
@@ -26,20 +33,28 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int screenHeight;
 	private boolean gameStarted;
 
+	ArrayList<Coin> cList;
+
 
 
 	private TextureAtlas atlas;
 	private Animation<TextureRegion> animation;
 	float elapsedTime = 0.1f;
+
+
 	@Override
 	public void create() {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		screenHeight = Gdx.graphics.getHeight();
 
-		camera = new OrthographicCamera(1, h / w);
-
-
+		// Hintergrund laden
+		background = new Texture("images/Background_new.png");
+		// Hintergrundgröße für die Kamera einstellen
+		//camera = new OrthographicCamera(background.getWidth(), background.getHeight());
+		camera = new OrthographicCamera(w, h);
+		//viewport = new FitViewport(background.getWidth(), background.getHeight(), camera);
+		viewport = new FitViewport(w, h, camera);
 		batch = new SpriteBatch();
 
 		//Atlas laufanimation von dem Spieler
@@ -49,7 +64,6 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
 
-		background = new Texture("images/Background_new.png");
 		playerTexture = new Texture("images/0.png");
 		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0); // Startposition am Boden
 		isPlayerFlying = false;
@@ -57,8 +71,17 @@ public class MyGdxGame extends ApplicationAdapter {
 		playerVerticalVelocity = 0; // Initialgeschwindigkeit des Spielers in vertikaler Richtung
 		gameStarted = false;
 
-		camera.setToOrtho(false, w, h);
+
+		camera.update();
+
+
+		//Coins einfügen
+		cList = new ArrayList<Coin>();
+		imageHelper ih = new imageHelper();
+		for (int i = 0; i<5; i++)
+			cList.add(new Coin(500, 55, ih.changeImgSize(150, 150, "images/coin.png"), 5,cList));
 	}
+
 
 	@Override
 	public void render() {
@@ -72,7 +95,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Hier ändern wir die vertikale Position des Spielers basierend auf seiner vertikalen Geschwindigkeit
 		playerPosition.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
 
-		camera.position.set(background.getWidth() / 2, screenHeight / 2, 0);
+		camera.position.set(750, 150, 0);
+		camera.zoom = 0.6f;
 		camera.update();
 
 		batch.setProjectionMatrix(camera.combined);
@@ -93,12 +117,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.end();
 
 		// Grenzen für den oberen und unteren Bildschirmrand
-		if (playerPosition.y >= screenHeight - currentFrame.getRegionHeight()) {
-			playerPosition.y = screenHeight - currentFrame.getRegionHeight();
+		if (playerPosition.y >= 240) {
+			playerPosition.y = 240;
 			playerVerticalVelocity = 0; // Setze die vertikale Geschwindigkeit auf Null
 		}
-		if (playerPosition.y <= 0) {
-			playerPosition.y = 0;
+		if (playerPosition.y <= 17) {
+			playerPosition.y = 17;
 			playerVerticalVelocity = 0; // Setze die vertikale Geschwindigkeit auf Null
 		}
 
@@ -112,9 +136,33 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Begrenze die vertikale Geschwindigkeit nach oben und unten
 		playerVerticalVelocity = Math.min(playerVerticalVelocity, 300); // Maximale Geschwindigkeit nach oben
 		playerVerticalVelocity = Math.max(playerVerticalVelocity, -300); // Maximale Geschwindigkeit nach unten
+
+
+
+		// check for collision
+		for (Coin c :cList){
+			if (Player.collideRectangle(c.getBoundary())){
+				c.setRandomPosition();
+			}
+		}
+
+		// Update
+		for (Coin coin : cList) {
+			float delta = 0;
+			coin.act(delta);
+		}
+
 	}
 
 
+
+
+
+
+	@Override
+	public void resize(int width, int height){
+		viewport.update(width, height);
+	}
 	@Override
 	public void dispose() {
 		batch.dispose();
