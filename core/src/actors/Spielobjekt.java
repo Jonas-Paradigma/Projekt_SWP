@@ -18,10 +18,7 @@ public abstract class Spielobjekt extends Actor {
         this.image.setX(x);
         this.image.setY(y);
     }
-    
-    public void draw(Batch batch, float parentAlpha) {
-        image.draw(batch);
-    }
+
 
     @Override
     public void act(float dt) {

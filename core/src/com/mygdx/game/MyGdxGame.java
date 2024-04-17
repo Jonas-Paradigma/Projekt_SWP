@@ -78,8 +78,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Coins einfügen
 		cList = new ArrayList<Coin>();
 		imageHelper ih = new imageHelper();
-		for (int i = 0; i<5; i++)
-			cList.add(new Coin(500, 55, ih.changeImgSize(150, 150, "images/coin.png"), 5,cList));
+		for (int i = 0; i < 5; i++) {
+			int randomX = (int) (Math.random() * Gdx.graphics.getWidth());
+			int randomY = (int) (Math.random() * Gdx.graphics.getHeight());
+			cList.add(new Coin(randomX, randomY, ih.changeImgSize(150, 150, "images/coin.png"), 5, cList));
+		}
+
 	}
 
 
@@ -92,7 +96,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		float backgroundOffsetX = backgroundScrollSpeed * 200;
 		backgroundOffsetX %= background.getWidth();
 
-		// Hier ändern wir die vertikale Position des Spielers basierend auf seiner vertikalen Geschwindigkeit
 		playerPosition.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
 
 		camera.position.set(750, 150, 0);
@@ -102,59 +105,58 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 
-		// Zeichne den Hintergrund
+		// Draw coins
+		for (Coin coin : cList) {
+			coin.draw(batch);
+		}
+
+		// Draw background
 		for (int i = 0; i < 2; i++) {
 			batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
 		}
 
-		// Berechne die nächste Frame der Animation
+		// Calculate next frame of player animation
 		elapsedTime += Gdx.graphics.getDeltaTime();
 		TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
 
-		// Zeichne die Animation des Spielers
+		// Draw player animation
 		batch.draw(currentFrame, playerPosition.x, playerPosition.y);
 
 		batch.end();
 
-		// Grenzen für den oberen und unteren Bildschirmrand
+		// Check boundaries
 		if (playerPosition.y >= 240) {
 			playerPosition.y = 240;
-			playerVerticalVelocity = 0; // Setze die vertikale Geschwindigkeit auf Null
+			playerVerticalVelocity = 0;
 		}
 		if (playerPosition.y <= 17) {
 			playerPosition.y = 17;
-			playerVerticalVelocity = 0; // Setze die vertikale Geschwindigkeit auf Null
+			playerVerticalVelocity = 0;
 		}
 
-		// Ändere die vertikale Geschwindigkeit basierend auf der Leertaste
+		// Change vertical velocity based on space key
 		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-			playerVerticalVelocity += 500 * Gdx.graphics.getDeltaTime(); // Beschleunigung nach oben
+			playerVerticalVelocity += 500 * Gdx.graphics.getDeltaTime(); // Accelerate upwards
 		} else {
-			playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime(); // Beschleunigung nach unten
+			playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime(); // Accelerate downwards
 		}
 
-		// Begrenze die vertikale Geschwindigkeit nach oben und unten
-		playerVerticalVelocity = Math.min(playerVerticalVelocity, 300); // Maximale Geschwindigkeit nach oben
-		playerVerticalVelocity = Math.max(playerVerticalVelocity, -300); // Maximale Geschwindigkeit nach unten
+		// Limit vertical velocity
+		playerVerticalVelocity = Math.min(playerVerticalVelocity, 300); // Maximum speed upwards
+		playerVerticalVelocity = Math.max(playerVerticalVelocity, -300); // Maximum speed downwards
 
-
-
-		// check for collision
-		for (Coin c :cList){
-			if (Player.collideRectangle(c.getBoundary())){
+		// Check for collision
+		for (Coin c : cList) {
+			if (Player.collideRectangle(c.getBoundary())) {
 				c.setRandomPosition();
 			}
 		}
 
-		// Update
+		// Update coins
 		for (Coin coin : cList) {
-			float delta = 0;
-			coin.act(delta);
+			coin.act(Gdx.graphics.getDeltaTime());
 		}
-
 	}
-
-
 
 
 

@@ -23,6 +23,8 @@ public class Coin extends Spielobjekt {
         setBoundary();
     }
 
+
+
     public void draw(Batch b) {
         super.draw(b);
     }
