@@ -35,8 +35,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	private ArrayList<Coin> cList;
 	private TextureAtlas walkingAtlas;
 	private TextureAtlas flyingAtlas;
+	private TextureAtlas standAtlas;
 	private Animation<TextureRegion> walkingAnimation;
 	private Animation<TextureRegion> flyingAnimation;
+	private Animation<TextureRegion> standAnimation;
 	private float elapsedTime = 0.1f;
 
 	@Override
@@ -60,6 +62,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		flyingAtlas = new TextureAtlas(Gdx.files.internal("animations/mainfly.atlas"));
 		Array<TextureAtlas.AtlasRegion> flyingFrames = flyingAtlas.findRegions("mainfly");
 		flyingAnimation = new Animation<>(0.09f, flyingFrames, Animation.PlayMode.LOOP);
+
+		// Atlas für Stand-Animation des Spielers laden
+		standAtlas = new TextureAtlas(Gdx.files.internal("animations/maincharakter_stand.atlas"));
+		Array<TextureAtlas.AtlasRegion> standFrames = standAtlas.findRegions("maincharakter mit jetpack");
+		standAnimation = new Animation<>(0.09f, standFrames, Animation.PlayMode.LOOP);
 
 		playerTexture = new Texture("images/0.png");
 		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0); // Startposition am Boden
@@ -109,16 +116,29 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
 		}
 
-		// Animation des Spielers abhängig von der Eingabe zeichnen
-		elapsedTime += Gdx.graphics.getDeltaTime();
-		TextureRegion currentFrame;
-		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-			currentFrame = flyingAnimation.getKeyFrame(elapsedTime, true);
-		} else {
-			currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
-		}
-		batch.draw(currentFrame, playerPosition.x, playerPosition.y);
+
+			// Animation des Spielers abhängig von der Eingabe zeichnen
+			elapsedTime += Gdx.graphics.getDeltaTime();
+			TextureRegion currentFrame;
+			if (isPlayerFlying && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+				// Wenn der Spieler in der Luft ist und die Leertaste losgelassen wird,
+				// stoppe die Fluganimation und setze die Laufanimation fort
+				currentFrame = standAnimation.getKeyFrame(elapsedTime, true);
+				isPlayerFlying = false; // Spieler ist nicht mehr in der Luft
+			} else if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+				// Wenn die Leertaste gedrückt wird, starte die Fluganimation
+				currentFrame = flyingAnimation.getKeyFrame(elapsedTime, true);
+				isPlayerFlying = true; // Spieler ist in der Luft
+			} else {
+				// Ansonsten setze die Laufanimation fort
+				currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
+			}
+			batch.draw(currentFrame, playerPosition.x, playerPosition.y);
+
 		batch.end();
+
+
+
 
 		// Vertikale Grenzen überprüfen
 		if (playerPosition.y >= 240) {
