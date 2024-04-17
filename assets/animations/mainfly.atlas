@@ -1,9 +1,12 @@
 mainfly.png
 size:256,128
 repeat:none
-mainfly1
-bounds:68,2,64,64
-mainfly2
+mainfly
+index:3
 bounds:2,2,64,64
-mainfly3
+mainfly
+index:2
+bounds:68,2,64,64
+mainfly
+index:1
 bounds:134,2,64,64
