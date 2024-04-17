@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import helper.imageHelper;
 
@@ -33,14 +32,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int screenHeight;
 	private boolean gameStarted;
 
-	ArrayList<Coin> cList;
-
-
-
-	private TextureAtlas atlas;
-	private Animation<TextureRegion> animation;
-	float elapsedTime = 0.1f;
-
+	private ArrayList<Coin> cList;
+	private TextureAtlas walkingAtlas;
+	private TextureAtlas flyingAtlas;
+	private Animation<TextureRegion> walkingAnimation;
+	private Animation<TextureRegion> flyingAnimation;
+	private float elapsedTime = 0.1f;
 
 	@Override
 	public void create() {
@@ -50,19 +47,19 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Hintergrund laden
 		background = new Texture("images/Background_new.png");
-		// Hintergrundgröße für die Kamera einstellen
-		//camera = new OrthographicCamera(background.getWidth(), background.getHeight());
 		camera = new OrthographicCamera(w, h);
-		//viewport = new FitViewport(background.getWidth(), background.getHeight(), camera);
 		viewport = new FitViewport(w, h, camera);
 		batch = new SpriteBatch();
 
-		//Atlas laufanimation von dem Spieler
-		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
-		Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions("mainwalk");
-		animation = new Animation<>(0.09f, frames, Animation.PlayMode.LOOP);
+		// Atlas für Laufanimation des Spielers laden
+		walkingAtlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
+		Array<TextureAtlas.AtlasRegion> walkingFrames = walkingAtlas.findRegions("mainwalk");
+		walkingAnimation = new Animation<>(0.09f, walkingFrames, Animation.PlayMode.LOOP);
 
-		atlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
+		// Atlas für Fluganimation des Spielers laden
+		flyingAtlas = new TextureAtlas(Gdx.files.internal("animations/mainfly.atlas"));
+		Array<TextureAtlas.AtlasRegion> flyingFrames = flyingAtlas.findRegions("mainfly");
+		flyingAnimation = new Animation<>(0.09f, flyingFrames, Animation.PlayMode.LOOP);
 
 		playerTexture = new Texture("images/0.png");
 		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0); // Startposition am Boden
@@ -71,21 +68,18 @@ public class MyGdxGame extends ApplicationAdapter {
 		playerVerticalVelocity = 0; // Initialgeschwindigkeit des Spielers in vertikaler Richtung
 		gameStarted = false;
 
-
+		// Kamera-Update
 		camera.update();
 
-
-		//Coins einfügen
-		cList = new ArrayList<Coin>();
+		// Münzen erstellen
+		cList = new ArrayList<>();
 		imageHelper ih = new imageHelper();
 		for (int i = 0; i < 5; i++) {
 			int randomX = (int) (Math.random() * Gdx.graphics.getWidth());
 			int randomY = (int) (Math.random() * Gdx.graphics.getHeight());
 			cList.add(new Coin(randomX, randomY, ih.changeImgSize(150, 150, "images/coin.png"), 5, cList));
 		}
-
 	}
-
 
 	@Override
 	public void render() {
@@ -105,26 +99,28 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 
-		// Draw coins
+		// Münzen zeichnen
 		for (Coin coin : cList) {
 			coin.draw(batch);
 		}
 
-		// Draw background
+		// Hintergrund zeichnen
 		for (int i = 0; i < 2; i++) {
 			batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
 		}
 
-		// Calculate next frame of player animation
+		// Animation des Spielers abhängig von der Eingabe zeichnen
 		elapsedTime += Gdx.graphics.getDeltaTime();
-		TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
-
-		// Draw player animation
+		TextureRegion currentFrame;
+		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+			currentFrame = flyingAnimation.getKeyFrame(elapsedTime, true);
+		} else {
+			currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
+		}
 		batch.draw(currentFrame, playerPosition.x, playerPosition.y);
-
 		batch.end();
 
-		// Check boundaries
+		// Vertikale Grenzen überprüfen
 		if (playerPosition.y >= 240) {
 			playerPosition.y = 240;
 			playerVerticalVelocity = 0;
@@ -134,41 +130,37 @@ public class MyGdxGame extends ApplicationAdapter {
 			playerVerticalVelocity = 0;
 		}
 
-		// Change vertical velocity based on space key
+		// Vertikale Geschwindigkeit ändern basierend auf der Leertaste
 		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-			playerVerticalVelocity += 500 * Gdx.graphics.getDeltaTime(); // Accelerate upwards
+			playerVerticalVelocity += 500 * Gdx.graphics.getDeltaTime(); // Beschleunigen nach oben
 		} else {
-			playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime(); // Accelerate downwards
+			playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime(); // Beschleunigen nach unten
 		}
 
-		// Limit vertical velocity
-		playerVerticalVelocity = Math.min(playerVerticalVelocity, 300); // Maximum speed upwards
-		playerVerticalVelocity = Math.max(playerVerticalVelocity, -300); // Maximum speed downwards
+		// Vertikale Geschwindigkeit begrenzen
+		playerVerticalVelocity = Math.min(playerVerticalVelocity, 300); // Maximale Geschwindigkeit nach oben
+		playerVerticalVelocity = Math.max(playerVerticalVelocity, -300); // Maximale Geschwindigkeit nach unten
 
-		// Check for collision
+		// Kollision mit Münzen überprüfen und aktualisieren
 		for (Coin c : cList) {
 			if (Player.collideRectangle(c.getBoundary())) {
 				c.setRandomPosition();
 			}
-		}
-
-		// Update coins
-		for (Coin coin : cList) {
-			coin.act(Gdx.graphics.getDeltaTime());
+			c.act(Gdx.graphics.getDeltaTime());
 		}
 	}
-
-
-
 
 	@Override
-	public void resize(int width, int height){
+	public void resize(int width, int height) {
 		viewport.update(width, height);
 	}
+
 	@Override
 	public void dispose() {
 		batch.dispose();
 		background.dispose();
 		playerTexture.dispose();
+		walkingAtlas.dispose();
+		flyingAtlas.dispose();
 	}
 }
