@@ -64,8 +64,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		flyingAnimation = new Animation<>(0.09f, flyingFrames, Animation.PlayMode.LOOP);
 
 		// Atlas für Stand-Animation des Spielers laden
-		standAtlas = new TextureAtlas(Gdx.files.internal("animations/maincharakter_stand.atlas"));
-		Array<TextureAtlas.AtlasRegion> standFrames = standAtlas.findRegions("maincharakter mit jetpack");
+		standAtlas = new TextureAtlas(Gdx.files.internal("animations/maindown.atlas"));
+		Array<TextureAtlas.AtlasRegion> standFrames = standAtlas.findRegions("maindown");
 		standAnimation = new Animation<>(0.09f, standFrames, Animation.PlayMode.LOOP);
 
 		playerTexture = new Texture("images/0.png");
