@@ -107,16 +107,19 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.begin();
 
 
-		// Münzen zeichnen
-		for (Coin coin : cList) {
-			coin.draw(batch);
-		}
+
+
 
 		// Hintergrund zeichnen
 		for (int i = 0; i < 2; i++) {
 			batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
 		}
 
+
+		//Münzen zeichnen
+		for (Coin coin : cList) {
+			coin.draw(batch);
+		}
 
 
 

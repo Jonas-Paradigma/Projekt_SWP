@@ -26,9 +26,6 @@ public class Coin extends Spielobjekt {
 
 
 
-    public void draw(Batch b) {
-        super.draw(b);
-    }
 
     public void update(float delta) {
         super.update(delta);
@@ -53,8 +50,9 @@ public class Coin extends Spielobjekt {
         int ry = 0;
         int rx = 0;
         while (collision) {
-            int minY = Gdx.graphics.getHeight() + (int) getHeight();
-            int maxW = (int) ((int) Gdx.graphics.getWidth() - getHeight());
+            int minY = 200; // Änderung: Die minimale Y-Position auf 200 setzen
+            int maxY = (int) (Gdx.graphics.getHeight() - getHeight()); // Maximale Y-Position basierend auf der Bildschirmhöhe und der Höhe der Münze berechnen
+            int maxW = (int) (Gdx.graphics.getWidth() - getWidth());
             rx = r.nextInt(maxW + 1 - 0) + 0;
             ry = r.nextInt(2000 + 1 - minY) + minY;
 
