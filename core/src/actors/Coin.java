@@ -25,6 +25,7 @@ public class Coin extends Spielobjekt {
 
 
 
+
     public void draw(Batch b) {
         super.draw(b);
     }

@@ -106,6 +106,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 
+
 		// Münzen zeichnen
 		for (Coin coin : cList) {
 			coin.draw(batch);
@@ -117,13 +118,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 
+
+
 		elapsedTime += Gdx.graphics.getDeltaTime();
 		TextureRegion currentFrame;
 
-// Überprüfen, ob der Spieler die untere Grenze des Hintergrunds erreicht hat
+	// Überprüfen, ob der Spieler die untere Grenze des Hintergrunds erreicht hat
 		float lowerBackgroundBoundary = 17;
 		if (playerPosition.y <= lowerBackgroundBoundary) {
-			// Wenn ja, setze die Fluganimation auf false, um den Spieler wieder zum Laufen zu bringen
 			isPlayerFlying = false;
 		}
 
