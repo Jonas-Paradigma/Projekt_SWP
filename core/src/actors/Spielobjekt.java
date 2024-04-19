@@ -34,6 +34,7 @@ public abstract class Spielobjekt extends Actor {
     protected void update(float delta) {
     }
 
-    protected void draw(Batch b) {
+    public void draw(Batch b) {
+        this.image.draw(b);
     }
 }
