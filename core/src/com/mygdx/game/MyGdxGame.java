@@ -117,23 +117,31 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 
-			// Animation des Spielers abhängig von der Eingabe zeichnen
-			elapsedTime += Gdx.graphics.getDeltaTime();
-			TextureRegion currentFrame;
-			if (isPlayerFlying && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-				// Wenn der Spieler in der Luft ist und die Leertaste losgelassen wird,
-				// stoppe die Fluganimation und setze die Laufanimation fort
-				currentFrame = standAnimation.getKeyFrame(elapsedTime, true);
-				isPlayerFlying = false; // Spieler ist nicht mehr in der Luft
-			} else if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-				// Wenn die Leertaste gedrückt wird, starte die Fluganimation
-				currentFrame = flyingAnimation.getKeyFrame(elapsedTime, true);
-				isPlayerFlying = true; // Spieler ist in der Luft
-			} else {
-				// Ansonsten setze die Laufanimation fort
-				currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
-			}
-			batch.draw(currentFrame, playerPosition.x, playerPosition.y);
+		elapsedTime += Gdx.graphics.getDeltaTime();
+		TextureRegion currentFrame;
+
+// Überprüfen, ob der Spieler die untere Grenze des Hintergrunds erreicht hat
+		float lowerBackgroundBoundary = 17;
+		if (playerPosition.y <= lowerBackgroundBoundary) {
+			// Wenn ja, setze die Fluganimation auf false, um den Spieler wieder zum Laufen zu bringen
+			isPlayerFlying = false;
+		}
+
+		if (isPlayerFlying && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+			// Wenn der Spieler in der Luft ist und die Leertaste losgelassen wird,
+			// stoppe die Fluganimation und setze die Laufanimation fort
+			currentFrame = standAnimation.getKeyFrame(elapsedTime, true);
+			//isPlayerFlying = false; // Spieler ist nicht mehr in der Luft
+		} else if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+			// Wenn die Leertaste gedrückt wird, starte die Fluganimation
+			currentFrame = flyingAnimation.getKeyFrame(elapsedTime, true);
+			isPlayerFlying = true; // Spieler ist in der Luft
+		} else {
+			// Ansonsten setze die Laufanimation fort
+			currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
+		}
+		batch.draw(currentFrame, playerPosition.x, playerPosition.y);
+
 
 		batch.end();
 
