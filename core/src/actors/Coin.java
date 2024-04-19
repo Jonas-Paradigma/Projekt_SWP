@@ -25,7 +25,9 @@ public class Coin extends Spielobjekt {
 
 
 
-
+    public void draw(Batch b) {
+        super.draw(b);
+    }
 
     public void update(float delta) {
         super.update(delta);
@@ -47,15 +49,14 @@ public class Coin extends Spielobjekt {
     public void setRandomPosition() {
         Random r = new Random();
         boolean collision = true;
-        int ry = 0;
         int rx = 0;
+        int ry = 0;
         while (collision) {
-            int minY = 200; // Änderung: Die minimale Y-Position auf 200 setzen
-            int maxY = (int) (Gdx.graphics.getHeight() - getHeight()); // Maximale Y-Position basierend auf der Bildschirmhöhe und der Höhe der Münze berechnen
-            int maxW = (int) (Gdx.graphics.getWidth() - getWidth());
-            rx = r.nextInt(maxW + 1 - 0) + 0;
-            ry = r.nextInt(2000 + 1 - minY) + minY;
-
+            int minY = 0; // Der sichtbare Bereich beginnt am unteren Rand des Bildschirms
+            int maxY = Gdx.graphics.getHeight() - (int) getHeight(); // Die maximale y-Position ist die Bildschirmhöhe abzüglich der Münzhöhe
+            int maxX = Gdx.graphics.getWidth() - (int) getWidth(); // Die maximale x-Position ist die Bildschirmbreite abzüglich der Münzbreite
+            rx = r.nextInt(maxX + 1 - 0) + 0;
+            ry = r.nextInt(maxY + 1 - minY) + minY;
             Rectangle rect = new Rectangle(rx, ry, getWidth(), getHeight());
             collision = false;
             for (Coin f : fList) {
@@ -65,9 +66,13 @@ public class Coin extends Spielobjekt {
                 }
             }
         }
-        setY(ry);
         setX(rx);
+        setY(ry);
+        setBoundary();
     }
+
+
+
 
     public Rectangle getBoundary() {
         return boundary;
