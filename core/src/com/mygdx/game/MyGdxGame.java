@@ -28,10 +28,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Vector2 playerPosition;
 	private boolean isPlayerFlying;
 	private float backgroundScrollSpeed;
-	private float playerVerticalVelocity; // Geschwindigkeit des Spielers in vertikaler Richtung
-	private int screenHeight;
-	private boolean gameStarted;
-
+	private float playerVerticalVelocity;
 	private ArrayList<Coin> cList;
 	private TextureAtlas walkingAtlas;
 	private TextureAtlas flyingAtlas;
@@ -45,7 +42,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create() {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
-		screenHeight = Gdx.graphics.getHeight();
 
 		// Hintergrund laden
 		background = new Texture("images/Background_new.png");
@@ -69,22 +65,24 @@ public class MyGdxGame extends ApplicationAdapter {
 		standAnimation = new Animation<>(0.09f, standFrames, Animation.PlayMode.LOOP);
 
 		playerTexture = new Texture("images/0.png");
-		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0); // Startposition am Boden
+		playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0);
 		isPlayerFlying = false;
 		backgroundScrollSpeed = 2;
-		playerVerticalVelocity = 0; // Initialgeschwindigkeit des Spielers in vertikaler Richtung
-		gameStarted = false;
+		playerVerticalVelocity = 0;
 
-		// Kamera-Update
 		camera.update();
 
 		// Münzen erstellen
 		cList = new ArrayList<>();
 		imageHelper ih = new imageHelper();
-		for (int i = 0; i < 5; i++) {
-			int randomX = (int) (Math.random() * Gdx.graphics.getWidth());
-			int randomY = (int) (Math.random() * Gdx.graphics.getHeight());
-			cList.add(new Coin(randomX, randomY, ih.changeImgSize(150, 150, "images/coin.png"), 5, cList));
+
+		// Erstelle Münzen an verschiedenen Stellen des Hintergrunds
+		for (int i = 0; i < 100; i++) {
+			int randomX = (int) (Math.random() * (background.getWidth() - 14)); // 14 ist die Breite der Münze
+			int randomY = (int) (Math.random() * (background.getHeight() - 14)); // 14 ist die Höhe der Münze
+			Texture coinTexture = ih.changeImgSize(14, 14, "images/coin.png");
+			Coin coin = new Coin(randomX, randomY, coinTexture);
+			cList.add(coin);
 		}
 	}
 
@@ -106,54 +104,38 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 
-
-
-
-
 		// Hintergrund zeichnen
 		for (int i = 0; i < 2; i++) {
 			batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
 		}
 
-
-		//Münzen zeichnen
+		// Münzen zeichnen und mit dem Hintergrund bewegen
 		for (Coin coin : cList) {
+			coin.moveWithBackground(backgroundScrollSpeed);
 			coin.draw(batch);
 		}
-
 
 
 		elapsedTime += Gdx.graphics.getDeltaTime();
 		TextureRegion currentFrame;
 
-	// Überprüfen, ob der Spieler die untere Grenze des Hintergrunds erreicht hat
 		float lowerBackgroundBoundary = 17;
 		if (playerPosition.y <= lowerBackgroundBoundary) {
 			isPlayerFlying = false;
 		}
 
 		if (isPlayerFlying && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-			// Wenn der Spieler in der Luft ist und die Leertaste losgelassen wird,
-			// stoppe die Fluganimation und setze die Laufanimation fort
 			currentFrame = standAnimation.getKeyFrame(elapsedTime, true);
-			//isPlayerFlying = false; // Spieler ist nicht mehr in der Luft
 		} else if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-			// Wenn die Leertaste gedrückt wird, starte die Fluganimation
 			currentFrame = flyingAnimation.getKeyFrame(elapsedTime, true);
-			isPlayerFlying = true; // Spieler ist in der Luft
+			isPlayerFlying = true;
 		} else {
-			// Ansonsten setze die Laufanimation fort
 			currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
 		}
 		batch.draw(currentFrame, playerPosition.x, playerPosition.y);
 
-
 		batch.end();
 
-
-
-
-		// Vertikale Grenzen überprüfen
 		if (playerPosition.y >= 240) {
 			playerPosition.y = 240;
 			playerVerticalVelocity = 0;
@@ -163,18 +145,15 @@ public class MyGdxGame extends ApplicationAdapter {
 			playerVerticalVelocity = 0;
 		}
 
-		// Vertikale Geschwindigkeit ändern basierend auf der Leertaste
 		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-			playerVerticalVelocity += 500 * Gdx.graphics.getDeltaTime(); // Beschleunigen nach oben
+			playerVerticalVelocity += 500 * Gdx.graphics.getDeltaTime();
 		} else {
-			playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime(); // Beschleunigen nach unten
+			playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime();
 		}
 
-		// Vertikale Geschwindigkeit begrenzen
-		playerVerticalVelocity = Math.min(playerVerticalVelocity, 300); // Maximale Geschwindigkeit nach oben
-		playerVerticalVelocity = Math.max(playerVerticalVelocity, -300); // Maximale Geschwindigkeit nach unten
+		playerVerticalVelocity = Math.min(playerVerticalVelocity, 300);
+		playerVerticalVelocity = Math.max(playerVerticalVelocity, -300);
 
-		// Kollision mit Münzen überprüfen und aktualisieren
 		for (Coin c : cList) {
 			if (Player.collideRectangle(c.getBoundary())) {
 				c.setRandomPosition();
