@@ -29,9 +29,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	private boolean isPlayerFlying;
 	private float backgroundScrollSpeed;
 	private float playerVerticalVelocity;
-	private int screenHeight;
-	private boolean gameStarted;
-
 	private ArrayList<Coin> cList;
 	private TextureAtlas walkingAtlas;
 	private TextureAtlas flyingAtlas;
@@ -45,7 +42,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create() {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
-		screenHeight = Gdx.graphics.getHeight();
 
 		// Hintergrund laden
 		background = new Texture("images/Background_new.png");
@@ -73,17 +69,20 @@ public class MyGdxGame extends ApplicationAdapter {
 		isPlayerFlying = false;
 		backgroundScrollSpeed = 2;
 		playerVerticalVelocity = 0;
-		gameStarted = false;
 
 		camera.update();
 
 		// Münzen erstellen
 		cList = new ArrayList<>();
 		imageHelper ih = new imageHelper();
-		for (int i = 0; i < 5; i++) {
-			int randomX = (int) (Math.random() * Gdx.graphics.getWidth());
-			int randomY = (int) (Math.random() * (200 - 17) + 17); // Zufällige Position zwischen 17 und 200
-			cList.add(new Coin(randomX, randomY, ih.changeImgSize(16, 16, "images/coin.png"), 5, cList));
+
+		// Erstelle Münzen an verschiedenen Stellen des Hintergrunds
+		for (int i = 0; i < 100; i++) {
+			int randomX = (int) (Math.random() * (background.getWidth() - 14)); // 14 ist die Breite der Münze
+			int randomY = (int) (Math.random() * (background.getHeight() - 14)); // 14 ist die Höhe der Münze
+			Texture coinTexture = ih.changeImgSize(14, 14, "images/coin.png");
+			Coin coin = new Coin(randomX, randomY, coinTexture);
+			cList.add(coin);
 		}
 	}
 
@@ -110,10 +109,12 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
 		}
 
-		// Münzen zeichnen
+		// Münzen zeichnen und mit dem Hintergrund bewegen
 		for (Coin coin : cList) {
+			coin.moveWithBackground(backgroundScrollSpeed);
 			coin.draw(batch);
 		}
+
 
 		elapsedTime += Gdx.graphics.getDeltaTime();
 		TextureRegion currentFrame;

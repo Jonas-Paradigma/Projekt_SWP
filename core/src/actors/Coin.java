@@ -3,88 +3,42 @@ package actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
-
-import java.util.ArrayList;
+import com.badlogic.gdx.math.Vector2;
 import java.util.Random;
 
-public class Coin extends Spielobjekt {
-    private int pixel;
-    private Rectangle boundary;
-    private ArrayList<Coin> fList;
+public class Coin {
+    private Texture texture;
+    private Vector2 position;
 
-    public Coin(int x, int y, Texture image, int pixel, ArrayList<Coin> fList) {
-        super(x, y, image);
-        this.pixel = pixel;
-        this.fList = fList;
-        boundary = new Rectangle();
-        setRandomPosition();
-        setBoundary();
+    public Coin(int x, int y, Texture texture) {
+        this.texture = texture;
+        this.position = new Vector2(x, y);
     }
 
-
-
-    public void draw(Batch b) {
-        super.draw(b);
+    public void draw(Batch batch) {
+        batch.draw(texture, position.x, position.y);
     }
 
-    public void update(float delta) {
-        super.update(delta);
-        setBoundary();
+    public void moveWithBackground(float backgroundScrollSpeed) {
+        position.x -= backgroundScrollSpeed;
     }
 
-    public boolean collideRectangle(Rectangle shape) {
-        return Intersector.overlaps(boundary, shape);
-    }
-
-    public ArrayList<Coin> getfList() {
-        return fList;
-    }
-
-    public void setfList(ArrayList<Coin> fList) {
-        this.fList = fList;
+    public Rectangle getBoundary() {
+        return new Rectangle(position.x, position.y, texture.getWidth(), texture.getHeight());
     }
 
     public void setRandomPosition() {
-        Random r = new Random();
-        boolean collision = true;
-        int rx = 0;
-        int ry = 0;
-        while (collision) {
-            int minY = 0; // Der sichtbare Bereich beginnt am unteren Rand des Bildschirms
-            int maxY = Gdx.graphics.getHeight() - (int) getHeight(); // Die maximale y-Position ist die Bildschirmhöhe abzüglich der Münzhöhe
-            int maxX = Gdx.graphics.getWidth() - (int) getWidth(); // Die maximale x-Position ist die Bildschirmbreite abzüglich der Münzbreite
-            rx = r.nextInt(maxX + 1 - 0) + 0;
-            ry = r.nextInt(maxY + 1 - minY) + minY;
-            Rectangle rect = new Rectangle(rx, ry, getWidth(), getHeight());
-            collision = false;
-            for (Coin f : fList) {
-                if (Intersector.overlaps(rect, f.getBoundary())) {
-                    collision = true;
-                    break;
-                }
-            }
-        }
-        setX(rx);
-        setY(ry);
-        setBoundary();
+        Random random = new Random();
+        position.x = random.nextInt((int) (2048 - texture.getWidth())); // Anpassen je nach Breite des Hintergrunds
+        position.y = random.nextInt((int) (Gdx.graphics.getHeight() - texture.getHeight()));
     }
 
-
-
-
-    public Rectangle getBoundary() {
-        return boundary;
-    }
-
-    private void setBoundary() {
-        boundary.set(getX(), getY(), getWidth(), getHeight());
-    }
-
-    @Override
     public void act(float delta) {
-        super.act(delta);
-        update(delta);
+        // Hier können zusätzliche Aktionen für die Münzen implementiert werden
+    }
+
+    public void dispose() {
+        texture.dispose();
     }
 }
