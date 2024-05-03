@@ -5,6 +5,8 @@ import actors.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -45,6 +47,8 @@ public class GameScreen2 implements Screen {
 
     private Player player;
     BitmapFont font;
+    private Sound soundEffect;
+    private AssetManager assetManager;
 
 
 
@@ -85,13 +89,19 @@ public class GameScreen2 implements Screen {
         // Münzen erstellen
         cList = new ArrayList<>();
         imageHelper ih = new imageHelper();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 7; i++) {
             int randomX = (int) (Math.random() * Gdx.graphics.getWidth());
 
             // Generiere eine zufällige y-Position zwischen 200 und 50
             int randomY = (int) (Math.random() * (250 - 50 + 1)) + 50;
 
             cList.add(new Coin(randomX, randomY, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed));
+
+            assetManager = new AssetManager();
+            assetManager.load("sounds/headshot.mp3", Sound.class);
+            assetManager.finishLoading();
+
+            soundEffect = assetManager.get("sounds/headshot.mp3", Sound.class);
         }
 
     }
@@ -132,9 +142,12 @@ public class GameScreen2 implements Screen {
             coin.moveWithBackground();
             coin.draw(batch);
             font.draw(batch, "Coins: "+coinshitt,320,275);
+            int distance = player.getDistanceTraveled();
+            font.draw(batch, "Distanz: " + distance + "m", 320, 250);
+
 
             if (player.collideRectangle(coin.getBoundary())){
-                System.out.println("collision");
+                //System.out.println("collision");
                 coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
                 coinshitt++;
             }

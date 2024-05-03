@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class Player {
@@ -35,6 +34,8 @@ public class Player {
     private float elapsedTime = 0.1f;
     float w = Gdx.graphics.getWidth();
     private SpriteBatch batch;
+
+    private float distanceTraveled = 0;
 
     Texture randomTex = new Texture("animations/laufen.png");
 
@@ -92,8 +93,12 @@ public class Player {
         if (this.y <= 17) {
             isPlayerFlying = false;
             currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
-            System.out.println("Boden");
+            //System.out.println("Boden");
         }
+
+        //Zurückgelegte Distanz
+        distanceTraveled += Math.abs(9) * Gdx.graphics.getDeltaTime();
+
 
         if (isPlayerFlying && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             currentFrame = standAnimation.getKeyFrame(elapsedTime, true);
@@ -177,4 +182,9 @@ public class Player {
     public TextureRegion getCurrentFrame() {
         return currentFrame;
     }
+
+    public int getDistanceTraveled() {
+        return (int) distanceTraveled;
+    }
+
 }
