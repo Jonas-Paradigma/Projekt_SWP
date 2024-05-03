@@ -8,15 +8,12 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import java.util.Random;
 
-public class Coin {
-    private Texture texture;
-    private Vector2 position;
+public class Coin extends Spielobjekt{
     private float speed;
     private Rectangle boundary;
 
     public Coin(int x, int y, Texture texture, float backgroundScrollSpeed) {
-        this.texture = texture;
-        this.position = new Vector2(x, y);
+        super(x,y,texture);
         this.speed = backgroundScrollSpeed * 2;
         boundary = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
     }
@@ -32,14 +29,14 @@ public class Coin {
 
 
     public void draw(Batch batch) {
-        batch.draw(texture, position.x, position.y);
+        batch.draw(this.getImage(), this.getX(), this.getY());
     }
 
     public void moveWithBackground() {
 
         System.out.println(speed);
-        position.x -= speed;
-        this.boundary.x = position.x;
+        this.setX(this.getX()-speed);
+        this.boundary.x = this.getX();
     }
 
     public Rectangle getBoundary() {
@@ -48,29 +45,13 @@ public class Coin {
 
     public void setRandomPosition() {
         Random random = new Random();
-        position.x = random.nextInt((int) (2048 - texture.getWidth())); // Anpassen je nach Breite des Hintergrunds
-        position.y = random.nextInt((int) (Gdx.graphics.getHeight() - texture.getHeight()));
+        this.setX(random.nextInt((int) (2048 - this.getWidth()))); // Anpassen je nach Breite des Hintergrunds
+        this.setY(random.nextInt((int) (Gdx.graphics.getHeight() - this.getHeight())));
     }
 
     public void act(float delta) {
         // Hier können zusätzliche Aktionen für die Münzen implementiert werden
-    }
-
-    public void dispose() {
-        texture.dispose();
-    }
-
-
-    public Vector2 getPosition() {
-        return position;
-    }
-
-    public float getWidth() {
-        return texture.getWidth();
-    }
-
-    public void setPosition(float x, float y) {
-        position.set(x, y);
+        moveWithBackground();
     }
 
 

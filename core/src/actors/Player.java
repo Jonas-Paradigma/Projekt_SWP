@@ -28,7 +28,6 @@ public class Player {
     private Animation<TextureRegion> standAnimation;
 
     private Texture playerTexture;
-    private Vector2 playerPosition;
     private boolean isPlayerFlying;
 
     private float playerVerticalVelocity; // Geschwindigkeit des Spielers in vertikaler Richtung
@@ -42,11 +41,12 @@ public class Player {
     TextureRegion currentFrame = new TextureRegion(randomTex);
 
 
-    public Player(float x, float y, float width, float height, Texture image) {
+    public Player(float x, float y, Texture image) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+        this.playerTexture = image;
         boundary = new Rectangle(x, y, width, height);
 
         // Atlas für Laufanimation des Spielers laden
@@ -65,7 +65,7 @@ public class Player {
         standAnimation = new Animation<>(0.09f, standFrames, Animation.PlayMode.LOOP);
 
         playerTexture = new Texture("images/0.png");
-        playerPosition = new Vector2(w / 2 - playerTexture.getWidth() / 2, 0); // Startposition am Boden
+        // Startposition am Boden
         isPlayerFlying = false;
         playerVerticalVelocity = 0; // Initialgeschwindigkeit des Spielers in vertikaler Richtung
 
@@ -73,9 +73,9 @@ public class Player {
     }
 
     public boolean collideRectangle(Rectangle bshape) {
-        if(Intersector.overlaps(this.boundary, bshape)){
+        if (Intersector.overlaps(this.boundary, bshape)) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -83,10 +83,10 @@ public class Player {
 
     public void update(float delta) {
         // Hier könnten Sie die Position des Spielers aktualisieren
-        playerPosition.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
+        this.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
 
         // Spieleranimationen aktualisieren
-        if (playerPosition.y <= 17) {
+        if (this.y <= 17) {
             isPlayerFlying = false;
         }
 
@@ -100,12 +100,12 @@ public class Player {
         }
 
         // Vertikale Grenzen überprüfen und Spielerbewegung aktualisieren
-        if (playerPosition.y >= 240) {
-            playerPosition.y = 240;
+        if (this.y >= 240) {
+            this.y = 240;
             playerVerticalVelocity = 0;
         }
-        if (playerPosition.y <= 17) {
-            playerPosition.y = 17;
+        if (this.y <= 17) {
+            this.y = 17;
             playerVerticalVelocity = 0;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
@@ -116,7 +116,7 @@ public class Player {
         playerVerticalVelocity = Math.min(playerVerticalVelocity, 300);
         playerVerticalVelocity = Math.max(playerVerticalVelocity, -300);
 
-
+        updateBoundary();
     }
 
     public boolean collidesWith(Rectangle shape) {
@@ -170,9 +170,5 @@ public class Player {
 
     public TextureRegion getCurrentFrame() {
         return currentFrame;
-    }
-
-    public Vector2 getPlayerPosition() {
-        return playerPosition;
     }
 }

@@ -44,6 +44,7 @@ public class GameScreen2 implements Screen {
     private boolean gameStarted;
 
     private Player player;
+    BitmapFont font;
 
 
 
@@ -74,10 +75,13 @@ public class GameScreen2 implements Screen {
 
         playerTexture = new Texture("images/0.png");
 
+        font = new BitmapFont(Gdx.files.internal("fonts/coins_20.fnt"),  false);
+        //font = new BitmapFont(Gdx.files.internal("fonts/calibri_green_30.fnt"), Gdx.files.internal("fonts/calibri_green_30.png"), false);
+
         // Kamera-Update
         camera.update();
 
-        player = new Player(w / 2 - playerTexture.getWidth() / 2, 0, 5, 5, playerTexture);
+        player = new Player(w / 2 - playerTexture.getWidth() / 2, 0,  playerTexture);
         // Münzen erstellen
         cList = new ArrayList<>();
         imageHelper ih = new imageHelper();
@@ -97,6 +101,8 @@ public class GameScreen2 implements Screen {
 
     }
 
+
+    int coinshitt = 0;
     @Override
     public void render(float v) {
         Gdx.gl.glClearColor(1, 0, 0, 1);
@@ -126,15 +132,20 @@ public class GameScreen2 implements Screen {
             coin.moveWithBackground();
             coin.draw(batch);
 
+            if (player.collideRectangle(coin.getBoundary())){
+                System.out.println("collision");
+                coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
+            }
             // Überprüfen, ob die Münze außerhalb des sichtbaren Bereichs ist
-            if (coin.getPosition().x + coin.getWidth() < 0) {
+            if (coin.getX() + coin.getWidth() < 0) {
                 // Wenn ja, setze die Münze auf die rechte Seite des Bildschirms
-                coin.setPosition(Gdx.graphics.getWidth(), coin.getPosition().y);
+                coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
             }
         }
+        font.draw(batch, "Coins: "+coinshitt,200,100);
 
         // Spieler zeichnen
-        batch.draw(player.getCurrentFrame(), player.getPlayerPosition().x, player.getPlayerPosition().y);
+        batch.draw(player.getCurrentFrame(), player.getX(), player.getY());
         player.update(Gdx.graphics.getDeltaTime());
 
         elapsedTime += Gdx.graphics.getDeltaTime();
