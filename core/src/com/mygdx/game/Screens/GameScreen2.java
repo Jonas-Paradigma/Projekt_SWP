@@ -64,7 +64,7 @@ public class GameScreen2 implements Screen {
     }
 
 
-    
+
     public void initStage() {
 
         //Musik
@@ -98,22 +98,51 @@ public class GameScreen2 implements Screen {
         // Münzen erstellen
         cList = new ArrayList<>();
         imageHelper ih = new imageHelper();
-        for (int i = 0; i < 7; i++) {
-            int randomX = (int) (Math.random() * Gdx.graphics.getWidth());
+        // Breite und Höhe einer Münze
+        int coinWidth = 16;
+        int coinHeight = 16;
 
-            // Generiere eine zufällige y-Position zwischen 200 und 50
-            int randomY = (int) (Math.random() * (250 - 50 + 1)) + 50;
+// Anzahl der Münzen pro Reihe und Anzahl der Reihen
+        int coinsPerRow = 5;
+        int numRows = 5;
 
-            cList.add(new Coin(randomX, randomY, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed));
+// Abstand zwischen den Münzen in einer Reihe und zwischen den Reihen
+        int xSpacing = 10;
+        int ySpacing = 10;
 
-            assetManager = new AssetManager();
+// Horizontaler Abstand zwischen den Reihen
+        int rowXSpacing = 100;
+
+// Position, an der die erste Münze platziert werden soll
+        int startX = 50;
+        int startY = 50; // Startposition in Y-Richtung
+
+// Schleife, um Münzenreihen zu erstellen und zu platzieren
+        for (int row = 0; row < numRows; row++) {
+            int y = startY + row * (coinHeight + ySpacing); // Aktuelle Y-Position basierend auf dem Abstand und der Anzahl der Reihen
+            int x = startX; // X-Position für die erste Münze in der Reihe
+
+            // Platzierung der Münzen in der Reihe
+            for (int col = 0; col < coinsPerRow; col++) {
+                Coin coin = new Coin(x, y, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed);
+                cList.add(coin);
+                x += coinWidth + xSpacing; // Inkrementieren der X-Position für die nächste Münze in derselben Reihe
+            }
+
+            startY += coinHeight + ySpacing + rowXSpacing; // Inkrementieren der Startposition in Y-Richtung für die nächste Reihe
+        }
+
+
+
+
+
+        assetManager = new AssetManager();
             assetManager.load("Sounds/Coin.mp3", Sound.class);
             assetManager.finishLoading();
 
             soundEffect = assetManager.get("Sounds/Coin.mp3", Sound.class);
         }
 
-    }
 
     @Override
     public void show() {
@@ -150,9 +179,9 @@ public class GameScreen2 implements Screen {
         for (Coin coin : cList) {
             coin.moveWithBackground();
             coin.draw(batch);
-            font.draw(batch, "Coins: "+coinshitt,320,275);
+            font.draw(batch, "Coins: "+coinshitt,320,280);
             int distance = player.getDistanceTraveled();
-            font.draw(batch, "Distanz: " + distance + "m", 320, 250);
+            font.draw(batch, "Distanz: " + distance + "m", 320, 255);
 
 
             if (player.collideRectangle(coin.getBoundary())){
@@ -177,6 +206,7 @@ public class GameScreen2 implements Screen {
 
         batch.end(); // Ende des Zeichnens der Münzen und des Spielers
     }
+
 
     @Override
     public void resize(int width, int height) {
