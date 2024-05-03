@@ -52,6 +52,7 @@ public class GameScreen2 implements Screen {
     private Sound soundEffect;
     private AssetManager assetManager;
     private Music music;
+    private TextureAtlas coinatlas;
 
 
 
@@ -64,7 +65,7 @@ public class GameScreen2 implements Screen {
     }
 
 
-    
+
     public void initStage() {
 
         //Musik
