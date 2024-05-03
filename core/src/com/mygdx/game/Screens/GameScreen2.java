@@ -18,6 +18,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import helper.imageHelper;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.audio.Music;
+
 
 import java.util.ArrayList;
 
@@ -49,6 +51,7 @@ public class GameScreen2 implements Screen {
     BitmapFont font;
     private Sound soundEffect;
     private AssetManager assetManager;
+    private Music music;
 
 
 
@@ -63,6 +66,12 @@ public class GameScreen2 implements Screen {
 
     
     public void initStage() {
+
+        //Musik
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/background.mp3"));
+        music.setLooping(true);
+        music.play();
+
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         screenHeight = Gdx.graphics.getHeight();
@@ -191,6 +200,7 @@ public class GameScreen2 implements Screen {
 
     @Override
     public void dispose() {
+        music.dispose();
         batch.dispose();
         background.dispose();
         soundEffect.dispose();
