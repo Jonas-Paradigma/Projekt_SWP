@@ -1,8 +1,9 @@
 package com.mygdx.game;
 
+
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-
+import com.mygdx.game.Screens.TitleScreen;
 
 
 
@@ -13,6 +14,6 @@ public class DesktopLauncher {
 		config.setForegroundFPS(75);
 		config.setWindowedMode(1500, 500);
 		config.setTitle("JetPack_Joyride");
-		new Lwjgl3Application(new MyGdxGame(), config);
+		new Lwjgl3Application(new ScreenGame(), config);
 	}
 }
