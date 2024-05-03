@@ -113,7 +113,7 @@ public class GameScreen2 implements Screen {
 // Horizontaler Abstand zwischen den Reihen
         int rowXSpacing = 100;
 
-// Position, an der die erste Münze platziert werden soll
+// Position, an der die erste Münze platziert werden solll
         int startX = 50;
         int startY = 50; // Startposition in Y-Richtung
 
