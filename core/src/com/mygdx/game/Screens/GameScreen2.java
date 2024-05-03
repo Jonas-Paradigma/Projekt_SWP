@@ -98,10 +98,10 @@ public class GameScreen2 implements Screen {
             cList.add(new Coin(randomX, randomY, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed));
 
             assetManager = new AssetManager();
-            assetManager.load("sounds/headshot.mp3", Sound.class);
+            assetManager.load("Sounds/Coin.mp3", Sound.class);
             assetManager.finishLoading();
 
-            soundEffect = assetManager.get("sounds/headshot.mp3", Sound.class);
+            soundEffect = assetManager.get("Sounds/Coin.mp3", Sound.class);
         }
 
     }
@@ -150,6 +150,7 @@ public class GameScreen2 implements Screen {
                 //System.out.println("collision");
                 coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
                 coinshitt++;
+                soundEffect.play();
             }
             // Überprüfen, ob die Münze außerhalb des sichtbaren Bereichs ist
             if (coin.getX() + coin.getWidth() < 0) {
@@ -192,5 +193,6 @@ public class GameScreen2 implements Screen {
     public void dispose() {
         batch.dispose();
         background.dispose();
+        soundEffect.dispose();
     }
 }
