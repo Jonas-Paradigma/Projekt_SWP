@@ -82,12 +82,17 @@ public class Player {
 
 
     public void update(float delta) {
+        // Zeit aktualisieren
+        elapsedTime += delta;
+
         // Hier könnten Sie die Position des Spielers aktualisieren
         this.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
 
         // Spieleranimationen aktualisieren
         if (this.y <= 17) {
             isPlayerFlying = false;
+            currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
+            System.out.println("Boden");
         }
 
         if (isPlayerFlying && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
@@ -118,6 +123,7 @@ public class Player {
 
         updateBoundary();
     }
+
 
     public boolean collidesWith(Rectangle shape) {
         return Intersector.overlaps(this.boundary, shape);

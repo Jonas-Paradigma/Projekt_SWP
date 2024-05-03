@@ -131,10 +131,12 @@ public class GameScreen2 implements Screen {
         for (Coin coin : cList) {
             coin.moveWithBackground();
             coin.draw(batch);
+            font.draw(batch, "Coins: "+coinshitt,320,275);
 
             if (player.collideRectangle(coin.getBoundary())){
                 System.out.println("collision");
                 coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
+                coinshitt++;
             }
             // Überprüfen, ob die Münze außerhalb des sichtbaren Bereichs ist
             if (coin.getX() + coin.getWidth() < 0) {
@@ -142,7 +144,7 @@ public class GameScreen2 implements Screen {
                 coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
             }
         }
-        font.draw(batch, "Coins: "+coinshitt,200,100);
+
 
         // Spieler zeichnen
         batch.draw(player.getCurrentFrame(), player.getX(), player.getY());
