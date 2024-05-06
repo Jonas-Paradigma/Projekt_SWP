@@ -98,38 +98,34 @@ public class GameScreen2 implements Screen {
         // Münzen erstellen
         cList = new ArrayList<>();
         imageHelper ih = new imageHelper();
-        // Breite und Höhe einer Münze
+
+        //Coins Platzieren
         int coinWidth = 16;
         int coinHeight = 16;
 
-// Anzahl der Münzen pro Reihe und Anzahl der Reihen
         int coinsPerRow = 5;
         int numRows = 5;
 
-// Abstand zwischen den Münzen in einer Reihe und zwischen den Reihen
         int xSpacing = 10;
         int ySpacing = 10;
 
-// Horizontaler Abstand zwischen den Reihen
+
         int rowXSpacing = 100;
 
-// Position, an der die erste Münze platziert werden solll
         int startX = 50;
-        int startY = 50; // Startposition in Y-Richtung
+        int startY = 50;
 
-// Schleife, um Münzenreihen zu erstellen und zu platzieren
         for (int row = 0; row < numRows; row++) {
-            int y = startY + row * (coinHeight + ySpacing); // Aktuelle Y-Position basierend auf dem Abstand und der Anzahl der Reihen
-            int x = startX; // X-Position für die erste Münze in der Reihe
+            int y = startY + row * (coinHeight + ySpacing);
+            int x = startX;
 
-            // Platzierung der Münzen in der Reihe
             for (int col = 0; col < coinsPerRow; col++) {
                 Coin coin = new Coin(x, y, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed);
                 cList.add(coin);
-                x += coinWidth + xSpacing; // Inkrementieren der X-Position für die nächste Münze in derselben Reihe
+                x += coinWidth + xSpacing;
             }
 
-            startY += coinHeight + ySpacing + rowXSpacing; // Inkrementieren der Startposition in Y-Richtung für die nächste Reihe
+            startY += coinHeight + ySpacing + rowXSpacing;
         }
 
 

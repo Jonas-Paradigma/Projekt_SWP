@@ -18,6 +18,8 @@ public class Coin extends Spielobjekt{
         super(x,y,texture);
         this.speed = backgroundScrollSpeed * 2;
         boundary = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
+
+
     }
 
 
