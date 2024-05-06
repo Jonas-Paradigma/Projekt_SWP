@@ -1,0 +1,15 @@
+npclinks.png
+size:512,128
+repeat:none
+npclinks
+index:3
+bounds:2,2,80,80
+npclinks
+index:2
+bounds:84,2,80,80
+npclinks
+index:4
+bounds:166,2,80,80
+npclinks
+index:1
+bounds:248,2,80,80

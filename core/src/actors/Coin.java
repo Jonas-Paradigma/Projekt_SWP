@@ -2,33 +2,22 @@ package actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-
 import java.util.Random;
 
 public class Coin extends Spielobjekt{
     private float speed;
     private Rectangle boundary;
-    private TextureAtlas aufsammeln;
-    private Animation<TextureRegion> aufsammelanimation;
 
 
     public Coin(int x, int y, Texture texture, float backgroundScrollSpeed) {
         super(x,y,texture);
         this.speed = backgroundScrollSpeed * 2;
         boundary = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
-
-        //Aufammelanimation
-        aufsammeln = new TextureAtlas(Gdx.files.internal("animations/aufsammeln.atlas"));
-        Array<TextureAtlas.AtlasRegion> walkingFrames = aufsammeln.findRegions("coinanimation");
-        aufsammelanimation = new Animation<>(0.09f, walkingFrames);
 
 
     }

@@ -52,7 +52,6 @@ public class GameScreen2 implements Screen {
     private Sound soundEffect;
     private AssetManager assetManager;
     private Music music;
-    private TextureAtlas coinatlas;
 
 
 
@@ -99,22 +98,47 @@ public class GameScreen2 implements Screen {
         // Münzen erstellen
         cList = new ArrayList<>();
         imageHelper ih = new imageHelper();
-        for (int i = 0; i < 7; i++) {
-            int randomX = (int) (Math.random() * Gdx.graphics.getWidth());
 
-            // Generiere eine zufällige y-Position zwischen 200 und 50
-            int randomY = (int) (Math.random() * (250 - 50 + 1)) + 50;
+        //Coins Platzieren
+        int coinWidth = 16;
+        int coinHeight = 16;
 
-            cList.add(new Coin(randomX, randomY, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed));
+        int coinsPerRow = 5;
+        int numRows = 5;
 
-            assetManager = new AssetManager();
-            assetManager.load("Sounds/Coin.mp3", Sound.class);
-            assetManager.finishLoading();
+        int xSpacing = 10;
+        int ySpacing = 10;
 
-            soundEffect = assetManager.get("Sounds/Coin.mp3", Sound.class);
+
+        int rowXSpacing = 100;
+
+        int startX = 50;
+        int startY = 50;
+
+        for (int row = 0; row < numRows; row++) {
+            int y = startY + row * (coinHeight + ySpacing);
+            int x = startX;
+
+            for (int col = 0; col < coinsPerRow; col++) {
+                Coin coin = new Coin(x, y, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed);
+                cList.add(coin);
+                x += coinWidth + xSpacing;
+            }
+
+            startY += coinHeight + ySpacing + rowXSpacing;
         }
 
+
+
+
+
+        assetManager = new AssetManager();
+        assetManager.load("Sounds/Coin.mp3", Sound.class);
+        assetManager.finishLoading();
+
+        soundEffect = assetManager.get("Sounds/Coin.mp3", Sound.class);
     }
+
 
     @Override
     public void show() {
@@ -151,9 +175,9 @@ public class GameScreen2 implements Screen {
         for (Coin coin : cList) {
             coin.moveWithBackground();
             coin.draw(batch);
-            font.draw(batch, "Coins: "+coinshitt,320,275);
+            font.draw(batch, "Coins: "+coinshitt,320,280);
             int distance = player.getDistanceTraveled();
-            font.draw(batch, "Distanz: " + distance + "m", 320, 250);
+            font.draw(batch, "Distanz: " + distance + "m", 320, 255);
 
 
             if (player.collideRectangle(coin.getBoundary())){
@@ -178,6 +202,7 @@ public class GameScreen2 implements Screen {
 
         batch.end(); // Ende des Zeichnens der Münzen und des Spielers
     }
+
 
     @Override
     public void resize(int width, int height) {
