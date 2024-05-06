@@ -133,11 +133,11 @@ public class GameScreen2 implements Screen {
 
 
         assetManager = new AssetManager();
-            assetManager.load("Sounds/Coin.mp3", Sound.class);
-            assetManager.finishLoading();
+        assetManager.load("Sounds/Coin.mp3", Sound.class);
+        assetManager.finishLoading();
 
-            soundEffect = assetManager.get("Sounds/Coin.mp3", Sound.class);
-        }
+        soundEffect = assetManager.get("Sounds/Coin.mp3", Sound.class);
+    }
 
 
     @Override
