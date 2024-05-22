@@ -2,16 +2,25 @@ package actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+
 import java.util.Random;
 
 public class Coin extends Spielobjekt{
     private float speed;
     private Rectangle boundary;
+
+    private TextureAtlas coinAtlas;
+    private Animation<TextureRegion> coinAnimation;
+    private float animationTime;
+    private boolean playCoinAnimation;
 
 
     public Coin(int x, int y, Texture texture, float backgroundScrollSpeed) {
@@ -20,6 +29,13 @@ public class Coin extends Spielobjekt{
         boundary = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
 
 
+
+        //coinAtlas = new TextureAtlas(Gdx.files.internal("animations/coinanimations.atlas"));
+        //Array<TextureAtlas.AtlasRegion> coinFrames = coinAtlas.findRegions("coinanimation");
+        //coinAnimation = new Animation<>(0.09f, coinFrames);
+
+        //animationTime = 0;
+        //playCoinAnimation = false;
     }
 
 
@@ -38,7 +54,6 @@ public class Coin extends Spielobjekt{
 
     public void moveWithBackground() {
 
-        System.out.println(speed);
         this.setX(this.getX()-speed);
         this.boundary.x = this.getX();
     }

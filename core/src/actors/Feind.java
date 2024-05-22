@@ -17,6 +17,7 @@ public class Feind  extends Spielobjekt {
         boundary = new Rectangle();
         this.setBoundary();
         this.screenX = screenX;
+
     }
 
     public double getGeschwindigkeit() {

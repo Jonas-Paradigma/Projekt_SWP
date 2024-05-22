@@ -1,6 +1,7 @@
 package com.mygdx.game.Screens;
 
 import actors.Coin;
+import actors.NPCs;
 import actors.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -19,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import helper.imageHelper;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.audio.Music;
+import actors.Feind;
 
 
 import java.util.ArrayList;
@@ -31,27 +34,26 @@ public class GameScreen2 implements Screen {
     private SpriteBatch batch;
     private Texture background;
     private Texture playerTexture;
-    private Vector2 playerPosition;
-    private boolean isPlayerFlying;
+    private Texture npcTexture;
+
     private float backgroundScrollSpeed;
-    private float playerVerticalVelocity;
     private ArrayList<Coin> cList;
-    private TextureAtlas walkingAtlas;
-    private TextureAtlas flyingAtlas;
-    private TextureAtlas standAtlas;
-    private Animation<TextureRegion> walkingAnimation;
-    private Animation<TextureRegion> flyingAnimation;
-    private Animation<TextureRegion> standAnimation;
+
+    private ArrayList<NPCs> npcList;
     private float elapsedTime = 0.1f;
     private boolean initialized;
     private int screenHeight;
     private boolean gameStarted;
 
     private Player player;
+
+    private NPCs npc;
     BitmapFont font;
     private Sound soundEffect;
     private AssetManager assetManager;
     private Music music;
+
+    private Feind feind;
 
 
 
@@ -84,9 +86,12 @@ public class GameScreen2 implements Screen {
         backgroundScrollSpeed = 2;
         gameStarted = false;
 
+        imageHelper ih = new imageHelper();
 
 
         playerTexture = new Texture("images/0.png");
+        npcTexture = new Texture("animations/npclinks.png");
+
 
         font = new BitmapFont(Gdx.files.internal("fonts/coins_20.fnt"),  false);
         //font = new BitmapFont(Gdx.files.internal("fonts/calibri_green_30.fnt"), Gdx.files.internal("fonts/calibri_green_30.png"), false);
@@ -95,9 +100,26 @@ public class GameScreen2 implements Screen {
         camera.update();
 
         player = new Player(w / 2 - playerTexture.getWidth() / 2, 0,  playerTexture);
+
+        npc = new NPCs((int) (w/2-npcTexture.getWidth()/2), 10, npcTexture);
+
+        feind = new Feind(100, Gdx.graphics.getHeight(), "zappyflach.png", Gdx.graphics.getWidth());
+
+
+
+
+
+        npcList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            int randomX = MathUtils.random(0, Gdx.graphics.getWidth());
+            NPCs npc = new NPCs(randomX, 10,npcTexture);
+            npcList.add(npc);
+        }
+
+
         // Münzen erstellen
         cList = new ArrayList<>();
-        imageHelper ih = new imageHelper();
+
 
         //Coins Platzieren
         int coinWidth = 16;
@@ -168,10 +190,20 @@ public class GameScreen2 implements Screen {
             batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
         }
 
-        batch.end(); // Ende des Zeichnens des Hintergrunds
+
+        batch.draw(npc.getCurrentFrame(), npc.getX() - backgroundOffsetX, npc.getY());
+
+        for (NPCs npc : npcList) {
+            batch.draw(npc.getCurrentFrame(), npc.getX() - backgroundOffsetX, npc.getY());
+            npc.update(Gdx.graphics.getDeltaTime());
+        }
+        elapsedTime += Gdx.graphics.getDeltaTime();
+
+        batch.end();
+
 
         //Münzen zeichnen und bewegen
-        batch.begin(); // Batch wieder öffnen für das Zeichnen der Münzen
+        batch.begin();
         for (Coin coin : cList) {
             coin.moveWithBackground();
             coin.draw(batch);
@@ -200,8 +232,24 @@ public class GameScreen2 implements Screen {
 
         elapsedTime += Gdx.graphics.getDeltaTime();
 
-        batch.end(); // Ende des Zeichnens der Münzen und des Spielers
+
+        batch.end(); // Ende des Zeichnens der Münzen und des Spielers und des NPCs
+
+
+
+        //  Fein einfügen
+        float delta = Gdx.graphics.getDeltaTime();
+
+        // Update
+        feind.act(delta);
+
+        // Render
+        batch.begin();
+        feind.draw(batch, 1.0f);
+
+
     }
+
 
 
     @Override
