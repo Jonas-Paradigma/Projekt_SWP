@@ -36,6 +36,10 @@ public class Coin extends Spielobjekt{
 
         //animationTime = 0;
         //playCoinAnimation = false;
+
+
+
+
     }
 
 

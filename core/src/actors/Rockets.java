@@ -1,20 +1,37 @@
 package actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 
-public class Feind {
+public class Rockets {
     private float x, y;
     private Texture texture;
     private Rectangle boundary;
     private final float speed = 4; // Fixed speed
 
-    public Feind(float x, float y, Texture texture) {
+    private TextureAtlas Raketenatlas;
+    private Animation<TextureRegion> Raketenanimation;
+
+    public Rockets(float x, float y, Texture texture) {
         this.x = x;
         this.y = y;
         this.texture = texture;
         this.boundary = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
+
+
+
+
+
+        // Atlas für die Raktenanimation
+        Raketenatlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
+        Array<TextureAtlas.AtlasRegion> walkingFrames = Raketenatlas.findRegions("mainwalk");
+        Raketenanimation = new Animation<>(0.09f, walkingFrames, Animation.PlayMode.LOOP);
     }
 
     public void update(float delta) {
