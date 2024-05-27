@@ -15,7 +15,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -81,7 +84,7 @@ public class GameScreen2 implements Screen {
 
         playerTexture = new Texture("images/0.png");
         //npcTexture = new Texture("animations/npclinks.png");
-        feindTexture = ih.changeImgSize(130, 40, "images/zapp.png");
+        feindTexture = ih.changeImgSize(130, 40, "images/zappy.png");
 
         font = new BitmapFont(Gdx.files.internal("fonts/coins_20.fnt"), false);
 
@@ -121,7 +124,18 @@ public class GameScreen2 implements Screen {
 
             for (int col = 0; col < coinsPerRow; col++) {
                 Coin coin = new Coin(x, y, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed);
-                cList.add(coin);
+                // Überprüfung auf Überlappung mit vorhandenen Münzen
+                boolean overlapping = false;
+                for (Coin existingCoin : cList) {
+                    if (Intersector.overlaps(coin.getBoundary(), existingCoin.getBoundary())) {
+                        overlapping = true;
+                        break;
+                    }
+                }
+                // Münze nur hinzufügen, wenn keine Überlappung besteht
+                if (!overlapping) {
+                    cList.add(coin);
+                }
                 x += coinWidth + xSpacing;
             }
 
@@ -162,6 +176,17 @@ public class GameScreen2 implements Screen {
         }
 
         batch.end();
+
+        ShapeRenderer shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        for (Coin coin : cList) {
+            Rectangle boundary = coin.getBoundary();
+            shapeRenderer.rect(boundary.x, boundary.y, boundary.width, boundary.height);
+        }
+
+        shapeRenderer.end();
 
         batch.begin();
         for (Coin coin : cList) {
@@ -210,8 +235,8 @@ public class GameScreen2 implements Screen {
             }
         }
         batch.end();
-
     }
+
 
     // Method to spawn new enemies
     private void spawnNewEnemy() {
