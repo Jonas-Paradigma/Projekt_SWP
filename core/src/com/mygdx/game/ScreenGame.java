@@ -7,6 +7,7 @@ import com.mygdx.game.Screens.TitleScreen;
 public class ScreenGame extends Game {
 
 	static public Skin gameSkin;
+	static public boolean enableSound=true;
 
 	public void create () {
 		gameSkin = new Skin(Gdx.files.internal("skin/glassy-ui.json"));
