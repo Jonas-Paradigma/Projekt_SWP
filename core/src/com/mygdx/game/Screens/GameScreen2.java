@@ -3,12 +3,13 @@ package com.mygdx.game.Screens;
 import actors.Coin;
 import actors.Feind;
 import actors.Player;
+import actors.Rockets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,17 +19,13 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import helper.imageHelper;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+
 import java.util.ArrayList;
 
 public class GameScreen2 implements Screen {
@@ -60,28 +57,30 @@ public class GameScreen2 implements Screen {
     private Sound soundEffect;
     private AssetManager assetManager;
     private Music music;
-    private Feind feind;
     private boolean soundEnabled = true;
     private boolean isPaused = false;
-    private Texture feindTexture;
-    private ArrayList<Feind> feindList; // List to store enemies
+    private ArrayList<Feind> feindList; // Liste zur Speicherung von Feinden
 
-    // New fields for enemy spawning
+    // Neue Felder für Feind-Spawn und Texturen
     private float spawnTimer;
     private float spawnInterval;
+    private Texture[] feindTextures;
 
+    // Neue Felder für Raketen-Spawn
+    private ArrayList<Rockets> rocketList; // Liste zur Speicherung von Raketen
+    private float rocketSpawnTimer = 0;
+    private float rocketSpawnInterval = 3.0f; // Intervall für Raketen-Spawn
+    private float totalElapsedTime = 0; // Gesamtzeit seit Spielbeginn
 
-    //Konstruktor
+    // Konstruktor
     public GameScreen2(Game aGame, boolean enableSound) {
         game = aGame;
         stage = new Stage(new ScreenViewport());
         this.soundEnabled = enableSound;
         initStage();
-
     }
 
     public void initStage() {
-
         imageHelper ih = new imageHelper();
 
         float w = Gdx.graphics.getWidth();
@@ -111,15 +110,24 @@ public class GameScreen2 implements Screen {
         camera.update();
 
         player = new Player(w / 2 - playerTexture.getWidth() / 2, 0,  playerTexture);
-        feindTexture = ih.changeImgSize(130, 40, "images/zappy.png");
 
-        // Initialize enemy list
+        // Initialisiere Feind-Texturen
+        feindTextures = new Texture[]{
+                ih.changeImgSize(130, 40, "images/zappy.png"),
+                ih.changeImgSize(130, 40, "images/zappy.png"),
+                ih.changeImgSize(130, 40, "images/zappy.png"),
+                ih.changeImgSize(130, 40, "images/zappy.png")
+        };
+
+        // Initialisiere Feind-Liste
         feindList = new ArrayList<>();
 
-        // Initial spawn interval and timer
-        spawnInterval = 2.0f; // Spawn an enemy every 2 seconds
+        // Initialer Spawn-Intervall und Timer
+        spawnInterval = 3.0f; // Spawn eines Feindes alle 2 Sekunden
         spawnTimer = 0;
 
+        // Initialisiere Raketen-Liste
+        rocketList = new ArrayList<>();
 
         cList = new ArrayList<>();
 
@@ -210,43 +218,6 @@ public class GameScreen2 implements Screen {
             for (Coin coin : cList) {
                 coin.moveWithBackground();
                 coin.draw(batch);
-                font.draw(batch, "Coins: "+coinshitt,320,280);
-                int distance = player.getDistanceTraveled();
-                font.draw(batch, "Distanz: " + distance + "m", 320, 255);
-
-                if (player.collideRectangle(coin.getBoundary())){
-                    coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
-                    coinshitt++;
-                    soundEffect.play();
-                }
-
-                if (coin.getX() + coin.getWidth() < 0) {
-                    coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
-                }
-            }
-
-            batch.draw(player.getCurrentFrame(), player.getX(), player.getY());
-            //player.update(Gdx.graphics.getDeltaTime());
-
-            elapsedTime += Gdx.graphics.getDeltaTime();
-
-            batch.end();
-
-            ShapeRenderer shapeRenderer = new ShapeRenderer();
-            shapeRenderer.setProjectionMatrix(camera.combined);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-            for (Coin coin : cList) {
-                Rectangle boundary = coin.getBoundary();
-                shapeRenderer.rect(boundary.x, boundary.y, boundary.width, boundary.height);
-            }
-
-            shapeRenderer.end();
-
-            batch.begin();
-            for (Coin coin : cList) {
-                coin.moveWithBackground();
-                coin.draw(batch);
                 font.draw(batch, "Coins: " + coinshitt, 320, 280);
                 int distance = player.getDistanceTraveled();
                 font.draw(batch, "Distanz: " + distance + "m", 320, 255);
@@ -270,28 +241,68 @@ public class GameScreen2 implements Screen {
             batch.end();
 
             float delta = Gdx.graphics.getDeltaTime();
+            totalElapsedTime += delta; // Gesamtzeit aktualisieren
 
             // Update the spawn timer and spawn new enemies if needed
             spawnTimer += delta;
             if (spawnTimer >= spawnInterval) {
                 spawnNewEnemy();
-                spawnTimer = 0; // Reset timer
+                spawnTimer = 0;
             }
 
             // Update and render enemies
             batch.begin();
-            for (Feind feind : feindList) {
-                feind.update(delta);
-                feind.draw(batch);
+            if (feindTextures != null) {
+                for (Feind feind : feindList) {
+                    feind.update(delta);
+                    feind.draw(batch);
 
-                if (player.collideRectangle(feind.getBoundary())) {
-                    System.out.println("Collision");
-                    Gdx.app.exit(); // Spiel schließen
+                    if (player.collideRectangle(feind.getBoundary())) {
+                        System.out.println("Collision");
+                        Gdx.app.exit(); // Spiel schließen
+                    }
                 }
             }
             batch.end();
-        }
 
+            // Raketen erst nach 15 Sekunden spawnen
+            if (totalElapsedTime >= 4) {
+                rocketSpawnTimer += delta;
+                if (rocketSpawnTimer >= rocketSpawnInterval) {
+                    spawnNewRocket();
+                    rocketSpawnTimer = 0;
+                }
+
+                // Update and render rockets
+                batch.begin();
+                for (Rockets rocket : rocketList) {
+                    rocket.update(delta);
+                    rocket.draw(batch);
+
+                    if (player.collideRectangle(rocket.getBoundary())) {
+                        Gdx.app.exit();
+                    }
+                }
+                batch.end();
+            }
+
+            // Draw the player's hitbox
+            ShapeRenderer shapeRenderer = new ShapeRenderer();
+            shapeRenderer.setProjectionMatrix(camera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+            // Draw hitboxes for coins
+            for (Coin coin : cList) {
+                Rectangle boundary = coin.getBoundary();
+                shapeRenderer.rect(boundary.x, boundary.y, boundary.width, boundary.height);
+            }
+
+            // Draw hitbox for player
+            Rectangle playerBoundary = player.getCurrentFrameBoundary();
+            shapeRenderer.rect(playerBoundary.x, playerBoundary.y, playerBoundary.width, playerBoundary.height);
+
+            shapeRenderer.end();
+        }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             isPaused = !isPaused;
@@ -304,12 +315,22 @@ public class GameScreen2 implements Screen {
         }
     }
 
+
+
     // Method to spawn new enemies
     private void spawnNewEnemy() {
         float initialX = Gdx.graphics.getWidth();
-        float y = MathUtils.random(17, 250 - feindTexture.getHeight());
-        Feind feind = new Feind(initialX, y, feindTexture);
+        float y = MathUtils.random(17, 250 - feindTextures[0].getHeight());
+        Texture randomFeindTexture = feindTextures[MathUtils.random(feindTextures.length - 1)];
+        Feind feind = new Feind(initialX, y, randomFeindTexture);
         feindList.add(feind);
+    }
+
+    private void spawnNewRocket() {
+        float initialX = Gdx.graphics.getWidth();
+        float y = MathUtils.random(17, 250 - 20);
+        Rockets rocket = new Rockets(initialX, y, new Texture("animations/rakete.png"));
+        rocketList.add(rocket);
     }
 
     public void pauseGame() {
@@ -323,7 +344,6 @@ public class GameScreen2 implements Screen {
         music.play();
         Gdx.app.log("GameScreen2", "Spiel fortgesetzt");
     }
-
 
     @Override
     public void resize(int width, int height) {
@@ -350,5 +370,8 @@ public class GameScreen2 implements Screen {
         batch.dispose();
         background.dispose();
         soundEffect.dispose();
+        for (Texture texture : feindTextures) {
+            texture.dispose();
+        }
     }
 }
