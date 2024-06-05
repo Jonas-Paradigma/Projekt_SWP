@@ -11,36 +11,39 @@ import com.badlogic.gdx.utils.Array;
 
 public class Rockets {
     private float x, y;
-    private Texture texture;
+    private Texture texture; // Texture for the rocket
     private Rectangle boundary;
-    private final float speed = 4; // Fixed speed
+    private float elapsedTime = 0.1f;
+    private final float speed = 5.5f; // Fixed speed
 
-    private TextureAtlas Raketenatlas;
-    private Animation<TextureRegion> Raketenanimation;
+    private TextureAtlas raketenAtlas;
+    private Animation<TextureRegion> raketenAnimation;
+    private TextureRegion currentFrame;
 
-    public Rockets(float x, float y, Texture texture) {
+    public Rockets(float x, float y, Texture image) {
         this.x = x;
         this.y = y;
-        this.texture = texture;
-        this.boundary = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
+        this.texture = image; // Properly assigning the texture
+        this.boundary = new Rectangle(x, y, texture.getWidth()/7, texture.getHeight()/17);
 
+        // Atlas for the rocket animation
+        raketenAtlas = new TextureAtlas(Gdx.files.internal("animations/rakete.atlas"));
+        Array<TextureAtlas.AtlasRegion> rocketFrames = raketenAtlas.findRegions("rakete");
+        raketenAnimation = new Animation<>(0.09f, rocketFrames, Animation.PlayMode.LOOP);
 
-
-
-
-        // Atlas für die Raktenanimation
-        Raketenatlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
-        Array<TextureAtlas.AtlasRegion> walkingFrames = Raketenatlas.findRegions("mainwalk");
-        Raketenanimation = new Animation<>(0.09f, walkingFrames, Animation.PlayMode.LOOP);
+        // Initialize currentFrame
+        currentFrame = raketenAnimation.getKeyFrame(elapsedTime, true);
     }
 
     public void update(float delta) {
         x -= speed * delta * 60; // Multiply by 60 to simulate pixels per second
         boundary.setPosition(x, y);
+        elapsedTime += delta; // Increment elapsed time
+        currentFrame = raketenAnimation.getKeyFrame(elapsedTime, true);
     }
 
     public void draw(SpriteBatch batch) {
-        batch.draw(texture, x, y);
+        batch.draw(currentFrame, x, y, currentFrame.getRegionWidth()/3, currentFrame.getRegionHeight()/3);
     }
 
     public Rectangle getBoundary() {

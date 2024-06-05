@@ -41,6 +41,11 @@ public class Player {
 
     TextureRegion currentFrame = new TextureRegion(randomTex);
 
+    private float hitboxOffsetX = 30; // horizontal offset for hitbox
+    private float hitboxOffsetY = 10; // vertical offset for hitbox
+    private float hitboxWidth = 20;   // width of the hitbox
+    private float hitboxHeight = 20;  // height of the hitbox
+
 
     public Player(float x, float y, Texture image) {
         this.x = x;
@@ -48,7 +53,7 @@ public class Player {
         this.width = image.getWidth();
         this.height = image.getHeight();
         this.playerTexture = image;
-        boundary = new Rectangle(x, y, width, height);
+        boundary = new Rectangle(x, y, (float) (width/7), height/5);
 
         // Atlas für Laufanimation des Spielers laden
         walkingAtlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
@@ -133,6 +138,13 @@ public class Player {
     public boolean collidesWith(Rectangle shape) {
         return Intersector.overlaps(this.boundary, shape);
     }
+
+    public Rectangle getCurrentFrameBoundary() {
+        TextureRegion currentFrame = getCurrentFrame();
+        return new Rectangle(getX() + hitboxOffsetX, getY() + hitboxOffsetY, hitboxWidth, hitboxHeight);
+    }
+
+
 
     public float getX() {
         return x;

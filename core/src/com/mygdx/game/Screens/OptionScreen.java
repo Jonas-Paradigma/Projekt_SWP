@@ -26,15 +26,13 @@ public class OptionScreen implements Screen {
     public OptionScreen(Game aGame) {
         game = aGame;
         stage = new Stage(new ScreenViewport());
-        batch = new SpriteBatch(); // Erstellen einer Instanz von SpriteBatch
+        batch = new SpriteBatch();
 
         imageHelper ih = new imageHelper();
 
-        // Hintergrundbild laden
         backgroundImage = new Texture("images/optionsscreen.png");
 
-        // Music On Button
-        Texture musicOnTexture = ih.changeImgSize(255, 100, "images/music on.png"); // Größe des Bildes ändern
+        Texture musicOnTexture = ih.changeImgSize(255, 100, "images/music on.png");
         ImageButton.ImageButtonStyle musicOnStyle = new ImageButton.ImageButtonStyle();
         musicOnStyle.imageUp = new TextureRegionDrawable(new TextureRegion(musicOnTexture));
         ImageButton musicOnButton = new ImageButton(musicOnStyle);
@@ -42,12 +40,7 @@ public class OptionScreen implements Screen {
         musicOnButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                // Musik aktivieren
-                ScreenGame.enableSound = true;
-                // Musik im GameScreen2 aktivieren
-                if (game.getScreen() instanceof GameScreen2) {
-                    ((GameScreen2) game.getScreen()).enableSound(true);
-                }
+                ((ScreenGame) game).toggleSound(true);
             }
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -56,9 +49,7 @@ public class OptionScreen implements Screen {
         });
         stage.addActor(musicOnButton);
 
-
-        // Music Off Button
-        Texture musicOffTexture = ih.changeImgSize(255, 100, "images/music off.png"); // Größe des Bildes ändern
+        Texture musicOffTexture = ih.changeImgSize(255, 100, "images/music off.png");
         ImageButton.ImageButtonStyle musicOffStyle = new ImageButton.ImageButtonStyle();
         musicOffStyle.imageUp = new TextureRegionDrawable(new TextureRegion(musicOffTexture));
         ImageButton musicOffButton = new ImageButton(musicOffStyle);
@@ -66,12 +57,7 @@ public class OptionScreen implements Screen {
         musicOffButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                // Musik deaktivieren
-                ScreenGame.enableSound = false;
-                // Musik im GameScreen2 deaktivieren
-                if (game.getScreen() instanceof GameScreen2) {
-                    ((GameScreen2) game.getScreen()).enableSound(false);
-                }
+                ((ScreenGame) game).toggleSound(false);
             }
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -80,9 +66,7 @@ public class OptionScreen implements Screen {
         });
         stage.addActor(musicOffButton);
 
-
-        // Back Button
-        Texture backTexture = ih.changeImgSize(255, 100, "images/back.png"); // Größe des Bildes ändern
+        Texture backTexture = ih.changeImgSize(255, 100, "images/back.png");
         ImageButton.ImageButtonStyle backStyle = new ImageButton.ImageButtonStyle();
         backStyle.imageUp = new TextureRegionDrawable(new TextureRegion(backTexture));
         ImageButton backButton = new ImageButton(backStyle);
@@ -110,7 +94,6 @@ public class OptionScreen implements Screen {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Hintergrundbild zeichnen
         batch.begin();
         batch.draw(backgroundImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
@@ -139,6 +122,6 @@ public class OptionScreen implements Screen {
     public void dispose() {
         stage.dispose();
         backgroundImage.dispose();
-        batch.dispose(); // SpriteBatch aufräumen
+        batch.dispose();
     }
 }
