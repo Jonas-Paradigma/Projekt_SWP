@@ -8,8 +8,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,13 +19,17 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import helper.imageHelper;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-
 import java.util.ArrayList;
 
 public class GameScreen2 implements Screen {
@@ -57,9 +61,12 @@ public class GameScreen2 implements Screen {
     private Sound soundEffect;
     private AssetManager assetManager;
     private Music music;
+    private Music music2;
+    private Feind feind;
     private boolean soundEnabled = true;
     private boolean isPaused = false;
-    private ArrayList<Feind> feindList; // Liste zur Speicherung von Feinden
+    private Texture feindTexture;
+    private ArrayList<Feind> feindList; // List to store enemies
 
     // Neue Felder für Feind-Spawn und Texturen
     private float spawnTimer;
@@ -72,21 +79,25 @@ public class GameScreen2 implements Screen {
     private float rocketSpawnInterval = 3.0f; // Intervall für Raketen-Spawn
     private float totalElapsedTime = 0; // Gesamtzeit seit Spielbeginn
 
-    // Konstruktor
+
+    //Konstruktor
     public GameScreen2(Game aGame, boolean enableSound) {
         game = aGame;
         stage = new Stage(new ScreenViewport());
         this.soundEnabled = enableSound;
         initStage();
+
     }
 
     public void initStage() {
+
         imageHelper ih = new imageHelper();
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         screenHeight = Gdx.graphics.getHeight();
 
+        //Musik
         music = Gdx.audio.newMusic(Gdx.files.internal("music/background.mp3"));
         music.setLooping(true);
         if (soundEnabled) {
@@ -110,6 +121,7 @@ public class GameScreen2 implements Screen {
         camera.update();
 
         player = new Player(w / 2 - playerTexture.getWidth() / 2, 0,  playerTexture);
+        feindTexture = ih.changeImgSize(130, 40, "images/zappy.png");
 
         // Initialisiere Feind-Texturen
         feindTextures = new Texture[]{
@@ -119,16 +131,19 @@ public class GameScreen2 implements Screen {
                 ih.changeImgSize(130, 40, "images/zappy.png")
         };
 
+
+
+        // Initial spawn interval and timer
+        spawnInterval = 3.0f; // Spawn an enemy every 2 seconds
+        spawnTimer = 0;
+
         // Initialisiere Feind-Liste
         feindList = new ArrayList<>();
-
-        // Initialer Spawn-Intervall und Timer
-        spawnInterval = 3.0f; // Spawn eines Feindes alle 2 Sekunden
-        spawnTimer = 0;
 
         // Initialisiere Raketen-Liste
         rocketList = new ArrayList<>();
 
+        //Initialisiere Coin-Liste
         cList = new ArrayList<>();
 
         int coinWidth = 16;
@@ -172,11 +187,10 @@ public class GameScreen2 implements Screen {
         assetManager = new AssetManager();
         assetManager.load("Sounds/Coin.mp3", Sound.class);
         assetManager.finishLoading();
-
         soundEffect = assetManager.get("Sounds/Coin.mp3", Sound.class);
     }
 
-    public void enableSound(boolean enabled) {
+    /*public void enableSound(boolean enabled) {
         soundEnabled = enabled;
         if (soundEnabled) {
             music.play();
@@ -184,9 +198,15 @@ public class GameScreen2 implements Screen {
             music.pause();
         }
     }
+    */
+
 
     @Override
     public void show() {
+    }
+
+    public void setPaused(boolean paused) {
+        isPaused = paused;
     }
 
     int coinshitt = 0;
@@ -304,6 +324,7 @@ public class GameScreen2 implements Screen {
             shapeRenderer.end();
         }
 
+        //Prüft Eingabe auf esc-Taste
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             isPaused = !isPaused;
             if (isPaused) {
@@ -314,8 +335,6 @@ public class GameScreen2 implements Screen {
             }
         }
     }
-
-
 
     // Method to spawn new enemies
     private void spawnNewEnemy() {
@@ -340,10 +359,9 @@ public class GameScreen2 implements Screen {
     }
 
     public void resumeGame() {
-        isPaused = false;
-        music.play();
         Gdx.app.log("GameScreen2", "Spiel fortgesetzt");
     }
+
 
     @Override
     public void resize(int width, int height) {

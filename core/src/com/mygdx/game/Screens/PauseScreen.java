@@ -15,8 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import helper.imageHelper;
 
-public class PauseScreen implements Screen {
 
+public class PauseScreen implements Screen {
     private Stage stage;
     private Game game;
     private Texture backgroundImage;
@@ -33,8 +33,7 @@ public class PauseScreen implements Screen {
 
         backgroundImage = new Texture("images/pausescreen.png");
 
-
-        //resume button
+        // Resume-Button
         Texture resumeTexture = ih.changeImgSize(255, 100, "images/back.png");
         ImageButton.ImageButtonStyle resumeStyle = new ImageButton.ImageButtonStyle();
         resumeStyle.imageUp = new TextureRegionDrawable(new TextureRegion(resumeTexture));
@@ -44,8 +43,10 @@ public class PauseScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 previousScreen.resumeGame();
+                previousScreen.setPaused(false); // Setze isPaused auf false
                 game.setScreen(previousScreen);
             }
+
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -53,8 +54,8 @@ public class PauseScreen implements Screen {
         });
         stage.addActor(resumeButton);
 
-        //Menu Button
-        Texture menuTexture = ih.changeImgSize(255, 100, "images/menu.png"); // Größe des Bildes ändern
+        // Menu-Button
+        Texture menuTexture = ih.changeImgSize(255, 100, "images/menu.png");
         ImageButton.ImageButtonStyle menuStyle = new ImageButton.ImageButtonStyle();
         menuStyle.imageUp = new TextureRegionDrawable(new TextureRegion(menuTexture));
         ImageButton menuButton = new ImageButton(menuStyle);
@@ -62,8 +63,9 @@ public class PauseScreen implements Screen {
         menuButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                game.setScreen(new TitleScreen(game)); // Wechsle zu OptionScreen, wenn der Button losgelassen wird
+                game.setScreen(new TitleScreen(game));
             }
+
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
