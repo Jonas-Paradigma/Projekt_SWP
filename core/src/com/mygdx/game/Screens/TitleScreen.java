@@ -32,6 +32,7 @@ public class TitleScreen implements Screen {
 
         imageHelper ih = new imageHelper();
 
+        //Play Button
         Texture startTexture = ih.changeImgSize(255, 100, "images/play.png");
         ImageButton.ImageButtonStyle startStyle = new ImageButton.ImageButtonStyle();
         startStyle.imageUp = new TextureRegionDrawable(new TextureRegion(startTexture));
@@ -51,6 +52,7 @@ public class TitleScreen implements Screen {
         });
         stage.addActor(startButton);
 
+        //Options Button
         Texture optionTexture = ih.changeImgSize(255, 100, "images/options.png");
         ImageButton.ImageButtonStyle optionStyle = new ImageButton.ImageButtonStyle();
         optionStyle.imageUp = new TextureRegionDrawable(new TextureRegion(optionTexture));

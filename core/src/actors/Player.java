@@ -2,6 +2,7 @@ package actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,29 +19,24 @@ public class Player {
     private float y;
     private float width;
     private float height;
-
     private TextureAtlas walkingAtlas;
     private TextureAtlas flyingAtlas;
     private TextureAtlas standAtlas;
     private Animation<TextureRegion> walkingAnimation;
     private Animation<TextureRegion> flyingAnimation;
     private Animation<TextureRegion> standAnimation;
-
     private Texture playerTexture;
     private boolean isPlayerFlying;
-
     private float playerVerticalVelocity; // Geschwindigkeit des Spielers in vertikaler Richtung
-
     private float elapsedTime = 0.1f;
     float w = Gdx.graphics.getWidth();
     private SpriteBatch batch;
-
     private float distanceTraveled = 0;
-
     Texture randomTex = new Texture("animations/laufen.png");
-
+    private Sound playerrun;
+    private Sound jetpacksound;
     TextureRegion currentFrame = new TextureRegion(randomTex);
-
+    private long lastPlayTime = 0;
     private float hitboxOffsetX = 30; // horizontal offset for hitbox
     private float hitboxOffsetY = 10; // vertical offset for hitbox
     private float hitboxWidth = 20;   // width of the hitbox
@@ -75,7 +71,8 @@ public class Player {
         isPlayerFlying = false;
         playerVerticalVelocity = 0; // Initialgeschwindigkeit des Spielers in vertikaler Richtung
 
-
+        playerrun = Gdx.audio.newSound(Gdx.files.internal("Sounds/playerrun.mp3"));
+        jetpacksound = Gdx.audio.newSound(Gdx.files.internal("Sounds/jetpacksound.mp3"));
     }
 
     public boolean collideRectangle(Rectangle bshape) {
@@ -98,7 +95,15 @@ public class Player {
         if (this.y <= 17) {
             isPlayerFlying = false;
             currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
-            //System.out.println("Boden");
+
+            // Aktuelle Zeit in Millisekunden abrufen
+            long currentTime = System.currentTimeMillis();
+
+            // Überprüfen, ob seit dem letzten Abspielen des Sounds mindestens 100 Millisekunden vergangen sind
+            if (currentTime - lastPlayTime >= 100) {
+                playerrun.play();
+                lastPlayTime = currentTime; // Timer aktualisieren
+            }
         }
 
         //Zurückgelegte Distanz
