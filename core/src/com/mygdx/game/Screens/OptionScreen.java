@@ -66,6 +66,8 @@ public class OptionScreen implements Screen {
         });
         stage.addActor(musicOffButton);
 
+
+        //Back Button
         Texture backTexture = ih.changeImgSize(255, 100, "images/back.png");
         ImageButton.ImageButtonStyle backStyle = new ImageButton.ImageButtonStyle();
         backStyle.imageUp = new TextureRegionDrawable(new TextureRegion(backTexture));

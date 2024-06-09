@@ -62,6 +62,7 @@ public class GameScreen2 implements Screen {
     private Music music;
     private Music music2;
     private Sound playerdie;
+    private Sound playerrocket;
     private Feind feind;
     private boolean soundEnabled = true;
     private boolean isPaused = false;
@@ -107,7 +108,7 @@ public class GameScreen2 implements Screen {
 
         //Sound
          playerdie = Gdx.audio.newSound(Gdx.files.internal("sounds/playerdie.mp3"));
-
+         playerrocket = Gdx.audio.newSound(Gdx.files.internal("sounds/playerrocket.mp3"));
 
         //Bilder
         playerTexture = new Texture("images/0.png");
@@ -293,6 +294,7 @@ public class GameScreen2 implements Screen {
                     rocket.draw(batch);
 
                     if (player.collideRectangle(rocket.getBoundary())) {
+                        playerrocket.play();
                         music.stop();
                         game.setScreen(new TitleScreen(game));
                     }
@@ -354,6 +356,9 @@ public class GameScreen2 implements Screen {
 
     public void resumeGame() {
         Gdx.app.log("GameScreen2", "Spiel fortgesetzt");
+        if (soundEnabled) {
+            music.play();
+        }
     }
 
 
@@ -382,6 +387,7 @@ public class GameScreen2 implements Screen {
         batch.dispose();
         background.dispose();
         playerdie.dispose();
+        playerrocket.dispose();
         soundEffect.dispose();
         for (Texture texture : feindTextures) {
             texture.dispose();

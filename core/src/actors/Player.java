@@ -100,7 +100,7 @@ public class Player {
             long currentTime = System.currentTimeMillis();
 
             // Überprüfen, ob seit dem letzten Abspielen des Sounds mindestens 100 Millisekunden vergangen sind
-            if (currentTime - lastPlayTime >= 100) {
+            if (currentTime - lastPlayTime >= 200) {
                 playerrun.play();
                 lastPlayTime = currentTime; // Timer aktualisieren
             }
