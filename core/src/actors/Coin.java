@@ -27,19 +27,6 @@ public class Coin extends Spielobjekt{
         super(x,y,texture);
         this.speed = backgroundScrollSpeed ;
         boundary = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
-
-
-
-        //coinAtlas = new TextureAtlas(Gdx.files.internal("animations/coinanimations.atlas"));
-        //Array<TextureAtlas.AtlasRegion> coinFrames = coinAtlas.findRegions("coinanimation");
-        //coinAnimation = new Animation<>(0.09f, coinFrames);
-
-        //animationTime = 0;
-        //playCoinAnimation = false;
-
-
-
-
     }
 
 

@@ -23,22 +23,21 @@ public class Rockets {
     public Rockets(float x, float y, Texture image) {
         this.x = x;
         this.y = y;
-        this.texture = image; // Properly assigning the texture
+        this.texture = image;
         this.boundary = new Rectangle(x, y, texture.getWidth()/7, texture.getHeight()/17);
 
-        // Atlas for the rocket animation
+
         raketenAtlas = new TextureAtlas(Gdx.files.internal("animations/rakete.atlas"));
         Array<TextureAtlas.AtlasRegion> rocketFrames = raketenAtlas.findRegions("rakete");
         raketenAnimation = new Animation<>(0.09f, rocketFrames, Animation.PlayMode.LOOP);
 
-        // Initialize currentFrame
         currentFrame = raketenAnimation.getKeyFrame(elapsedTime, true);
     }
 
     public void update(float delta) {
-        x -= speed * delta * 60; // Multiply by 60 to simulate pixels per second
+        x -= speed * delta * 60;
         boundary.setPosition(x, y);
-        elapsedTime += delta; // Increment elapsed time
+        elapsedTime += delta;
         currentFrame = raketenAnimation.getKeyFrame(elapsedTime, true);
     }
 

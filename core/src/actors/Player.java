@@ -19,28 +19,37 @@ public class Player {
     private float y;
     private float width;
     private float height;
+
     private TextureAtlas walkingAtlas;
     private TextureAtlas flyingAtlas;
     private TextureAtlas standAtlas;
     private Animation<TextureRegion> walkingAnimation;
     private Animation<TextureRegion> flyingAnimation;
     private Animation<TextureRegion> standAnimation;
+
     private Texture playerTexture;
     private boolean isPlayerFlying;
+
     private float playerVerticalVelocity; // Geschwindigkeit des Spielers in vertikaler Richtung
+
     private float elapsedTime = 0.1f;
     float w = Gdx.graphics.getWidth();
     private SpriteBatch batch;
+
     private float distanceTraveled = 0;
+
     Texture randomTex = new Texture("animations/laufen.png");
+
+    TextureRegion currentFrame = new TextureRegion(randomTex);
+
+    private float hitboxOffsetX = 30;
+    private float hitboxOffsetY = 10;
+    private float hitboxWidth = 20;
+    private float hitboxHeight = 20;
+
     private Sound playerrun;
     private Sound playerfly;
-    TextureRegion currentFrame = new TextureRegion(randomTex);
     private long lastPlayTime = 0;
-    private float hitboxOffsetX = 30; // horizontal offset for hitbox
-    private float hitboxOffsetY = 10; // vertical offset for hitbox
-    private float hitboxWidth = 20;   // width of the hitbox
-    private float hitboxHeight = 20;  // height of the hitbox
 
 
     public Player(float x, float y, Texture image) {
@@ -51,17 +60,17 @@ public class Player {
         this.playerTexture = image;
         boundary = new Rectangle(x, y, (float) (width/7), height/5);
 
-        // Atlas für Laufanimation des Spielers laden
+        // Atlas für Laufanimation
         walkingAtlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
         Array<TextureAtlas.AtlasRegion> walkingFrames = walkingAtlas.findRegions("mainwalk");
         walkingAnimation = new Animation<>(0.09f, walkingFrames, Animation.PlayMode.LOOP);
 
-        // Atlas für Fluganimation des Spielers laden
+        // Atlas für Fluganimation
         flyingAtlas = new TextureAtlas(Gdx.files.internal("animations/mainfly.atlas"));
         Array<TextureAtlas.AtlasRegion> flyingFrames = flyingAtlas.findRegions("mainfly");
         flyingAnimation = new Animation<>(0.09f, flyingFrames, Animation.PlayMode.LOOP);
 
-        // Atlas für Stand-Animation des Spielers laden
+        // Atlas für Stand-Animation
         standAtlas = new TextureAtlas(Gdx.files.internal("animations/maindown.atlas"));
         Array<TextureAtlas.AtlasRegion> standFrames = standAtlas.findRegions("maindown");
         standAnimation = new Animation<>(0.09f, standFrames, Animation.PlayMode.LOOP);
@@ -69,11 +78,12 @@ public class Player {
         playerTexture = new Texture("images/0.png");
         // Startposition am Boden
         isPlayerFlying = false;
-        playerVerticalVelocity = 0; // Initialgeschwindigkeit des Spielers in vertikaler Richtung
+        playerVerticalVelocity = 0;
 
         playerrun = Gdx.audio.newSound(Gdx.files.internal("Sounds/playerrun.mp3"));
         playerfly = Gdx.audio.newSound(Gdx.files.internal("sounds/jetpack_jet_lp.wav"));
     }
+
 
     public boolean collideRectangle(Rectangle bshape) {
         if (Intersector.overlaps(this.boundary, bshape)) {
@@ -85,13 +95,11 @@ public class Player {
 
 
     public void update(float delta) {
-        // Zeit aktualisieren
         elapsedTime += delta;
 
-        // Hier könnten Sie die Position des Spielers aktualisieren
         this.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
 
-        // Spieleranimationen aktualisieren
+        // Spieleranimationen
         if (this.y <= 17) {
             isPlayerFlying = false;
             currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
@@ -116,19 +124,16 @@ public class Player {
         } else if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             currentFrame = flyingAnimation.getKeyFrame(elapsedTime, true);
             isPlayerFlying = true;
-
             long currentTime = System.currentTimeMillis();
 
             if (currentTime - lastPlayTime >= 150) {
                 playerfly.play();
                 lastPlayTime = currentTime; // Timer aktualisieren
             }
-
         } else {
             currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
         }
 
-        // Vertikale Grenzen überprüfen und Spielerbewegung aktualisieren
         if (this.y >= 240) {
             this.y = 240;
             playerVerticalVelocity = 0;
@@ -199,6 +204,8 @@ public class Player {
     private void updateBoundary() {
         boundary.set(x, y, width, height);
     }
+
+
 
 
     public void act(float delta) {

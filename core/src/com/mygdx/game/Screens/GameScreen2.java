@@ -1,9 +1,6 @@
 package com.mygdx.game.Screens;
 
-import actors.Coin;
-import actors.Feind;
-import actors.Player;
-import actors.Rockets;
+import actors.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -44,7 +41,7 @@ public class GameScreen2 implements Screen {
     private boolean isPlayerFlying;
     private float backgroundScrollSpeed;
     private float playerVerticalVelocity;
-    private ArrayList<Coin> cList;
+    private ArrayList<Coin> coinlist;
     private TextureAtlas walkingAtlas;
     private TextureAtlas flyingAtlas;
     private TextureAtlas standAtlas;
@@ -55,14 +52,13 @@ public class GameScreen2 implements Screen {
     private boolean initialized;
     private int screenHeight;
     private boolean gameStarted;
+
     private Player player;
     BitmapFont font;
     private Sound soundEffect;
     private AssetManager assetManager;
     private Music music;
     private Music music2;
-    private Sound playerdie;
-    private Sound playerrocket;
     private Feind feind;
     private boolean soundEnabled = true;
     private boolean isPaused = false;
@@ -79,6 +75,13 @@ public class GameScreen2 implements Screen {
     private float rocketSpawnTimer = 0;
     private float rocketSpawnInterval = 3.0f; // Intervall für Raketen-Spawn
     private float totalElapsedTime = 0; // Gesamtzeit seit Spielbeginn
+    private CoinList coinList; // Liste der Münzen
+    private int coinshitt = 0;
+
+    //Sounds und music
+    private Sound playerdie;
+    private Sound playerrocket;
+
 
     //Konstruktor
     public GameScreen2(Game aGame, boolean enableSound) {
@@ -90,14 +93,13 @@ public class GameScreen2 implements Screen {
     }
 
     public void initStage() {
-
         imageHelper ih = new imageHelper();
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         screenHeight = Gdx.graphics.getHeight();
 
-        //Musik
+        // Musik
         music = Gdx.audio.newMusic(Gdx.files.internal("music/background.mp3"));
         music.setLooping(true);
         if (soundEnabled) {
@@ -107,14 +109,12 @@ public class GameScreen2 implements Screen {
         }
 
         //Sound
-         playerdie = Gdx.audio.newSound(Gdx.files.internal("sounds/playerdie.mp3"));
-         playerrocket = Gdx.audio.newSound(Gdx.files.internal("sounds/playerrocket.mp3"));
+        playerdie = Gdx.audio.newSound(Gdx.files.internal("sounds/playerdie.mp3"));
+        playerrocket = Gdx.audio.newSound(Gdx.files.internal("sounds/playerrocket.mp3"));
 
 
         //Bilder
-        playerTexture = new Texture("images/0.png");
         background = new Texture("images/Background_new.png");
-
         camera = new OrthographicCamera(w, h);
         viewport = new FitViewport(w, h, camera);
         batch = new SpriteBatch();
@@ -122,77 +122,34 @@ public class GameScreen2 implements Screen {
         backgroundScrollSpeed = 2;
         gameStarted = false;
 
-        font = new BitmapFont(Gdx.files.internal("fonts/coins_20.fnt"),  false);
+        playerTexture = new Texture("images/0.png");
+
+        font = new BitmapFont(Gdx.files.internal("fonts/coins_20.fnt"), false);
 
         camera.update();
 
-        player = new Player(w / 2 - playerTexture.getWidth() / 2, 0,  playerTexture);
+        player = new Player(w / 2 - playerTexture.getWidth() / 2, 0, playerTexture);
         feindTexture = ih.changeImgSize(130, 40, "images/zappy.png");
 
-        // Initialisiere Feind-Texturen
         feindTextures = new Texture[]{
                 ih.changeImgSize(130, 40, "images/zappy.png"),
-                ih.changeImgSize(130, 40, "images/zappy.png"),
-                ih.changeImgSize(130, 40, "images/zappy.png"),
-                ih.changeImgSize(130, 40, "images/zappy.png")
+                ih.changeImgSize(60, 120, "images/vertikal_zappy.png"),
         };
 
-        // Initial spawn interval and timer
-        spawnInterval = 3.0f; // Spawn an enemy every 2 seconds
+
+        spawnInterval = 4.5f; // Der Feind wird alle 4.5 Sekunden eingefügt
         spawnTimer = 0;
 
-        // Initialisiere Feind-Liste
         feindList = new ArrayList<>();
-
-        // Initialisiere Raketen-Liste
         rocketList = new ArrayList<>();
-
-        //Initialisiere Coin-Liste
-        cList = new ArrayList<>();
-
-        int coinWidth = 16;
-        int coinHeight = 16;
-
-        int coinsPerRow = 5;
-        int numRows = 5;
-
-        int xSpacing = 10;
-        int ySpacing = 10;
-
-        int rowXSpacing = 100;
-
-        int startX = 50;
-        int startY = 50;
-
-        for (int row = 0; row < numRows; row++) {
-            int y = startY + row * (coinHeight + ySpacing);
-            int x = startX;
-
-            for (int col = 0; col < coinsPerRow; col++) {
-                Coin coin = new Coin(x, y, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed);
-                // Überprüfung auf Überlappung mit vorhandenen Münzen
-                boolean overlapping = false;
-                for (Coin existingCoin : cList) {
-                    if (Intersector.overlaps(coin.getBoundary(), existingCoin.getBoundary())) {
-                        overlapping = true;
-                        break;
-                    }
-                }
-                // Münze nur hinzufügen, wenn keine Überlappung besteht
-                if (!overlapping) {
-                    cList.add(coin);
-                }
-                x += coinWidth + xSpacing;
-            }
-
-            startY += coinHeight + ySpacing + rowXSpacing;
-        }
+        coinList = new CoinList(5, 1); // Beispiel: 25 Münzen, Richtung 1 (oder was auch immer die Richtung bedeutet)
 
         assetManager = new AssetManager();
         assetManager.load("Sounds/Coin.mp3", Sound.class);
         assetManager.finishLoading();
         soundEffect = assetManager.get("Sounds/Coin.mp3", Sound.class);
     }
+
 
     @Override
     public void show() {
@@ -202,10 +159,11 @@ public class GameScreen2 implements Screen {
         isPaused = paused;
     }
 
-    int coinshitt = 0;
+
+    private boolean rocketsSpawned = false;
 
     @Override
-    public void render(float v) {
+    public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1); // Weißer Hintergrund
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -219,32 +177,27 @@ public class GameScreen2 implements Screen {
             camera.update();
 
             batch.setProjectionMatrix(camera.combined);
-
             batch.begin();
 
             for (int i = 0; i < 2; i++) {
                 batch.draw(background, i * background.getWidth() - backgroundOffsetX, 0);
             }
+
             batch.end();
 
             batch.begin();
-            for (Coin coin : cList) {
-                coin.moveWithBackground();
-                coin.draw(batch);
-                font.draw(batch, "Coins: " + coinshitt, 320, 280);
-                int distance = player.getDistanceTraveled();
-                font.draw(batch, "Distanz: " + distance + "m", 320, 255);
 
-                if (player.collideRectangle(coin.getBoundary())) {
-                    coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
-                    coinshitt++;
-                    soundEffect.play();
-                }
+            coinList.collide(player, soundEffect, () -> coinshitt++);
 
-                if (coin.getX() + coin.getWidth() < 0) {
-                    coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
-                }
-            }
+            // Zeige die Anzahl eingesammelter Münzen an
+            font.draw(batch, "Coins: " + coinshitt, 320, 280);
+
+            coinList.render(batch);
+            System.out.println("Player" + player.getX());
+
+            // Zeige die Distanz an
+            int distance = player.getDistanceTraveled();
+            font.draw(batch, "Distanz: " + distance + "m", 320, 255);
 
             batch.draw(player.getCurrentFrame(), player.getX(), player.getY());
             player.update(Gdx.graphics.getDeltaTime());
@@ -253,17 +206,14 @@ public class GameScreen2 implements Screen {
 
             batch.end();
 
-            float delta = Gdx.graphics.getDeltaTime();
-            totalElapsedTime += delta; // Gesamtzeit aktualisieren
+            totalElapsedTime += delta;
 
-            // Update the spawn timer and spawn new enemies if needed
             spawnTimer += delta;
             if (spawnTimer >= spawnInterval) {
                 spawnNewEnemy();
                 spawnTimer = 0;
             }
 
-            // Update and render enemies
             batch.begin();
             if (feindTextures != null) {
                 for (Feind feind : feindList) {
@@ -271,10 +221,10 @@ public class GameScreen2 implements Screen {
                     feind.draw(batch);
 
                     if (player.collideRectangle(feind.getBoundary())) {
-                        playerdie.play();
                         System.out.println("Collision");
-                        music.stop();
                         game.setScreen(new TitleScreen(game));
+                        music.stop();
+                        playerdie.play();
                     }
                 }
             }
@@ -283,42 +233,55 @@ public class GameScreen2 implements Screen {
             // Raketen erst nach 15 Sekunden spawnen
             if (totalElapsedTime >= 4) {
                 rocketSpawnTimer += delta;
+
                 if (rocketSpawnTimer >= rocketSpawnInterval) {
                     spawnNewRocket();
                     rocketSpawnTimer = 0;
                 }
 
-                // Update and render rockets
+                // Neue Raketen nach jedem 15 Sekunden Intervall hinzufügen
+                if ((int)(totalElapsedTime / 15) > (int)((totalElapsedTime - delta) / 15)) {
+                    spawnRocketAtPosition(17);
+                    spawnRocketAtPosition(250);
+                    rocketsSpawned = true;
+                } else {
+                    rocketsSpawned = false;
+                }
+
+
                 batch.begin();
                 for (Rockets rocket : rocketList) {
                     rocket.update(delta);
                     rocket.draw(batch);
 
                     if (player.collideRectangle(rocket.getBoundary())) {
-                        playerrocket.play();
-                        music.stop();
                         game.setScreen(new TitleScreen(game));
+                        music.stop();
+                        playerrocket.play();
                     }
                 }
                 batch.end();
             }
 
-            // Draw the player's hitbox
+            /*
+            //Hitbox des Spielers
             ShapeRenderer shapeRenderer = new ShapeRenderer();
             shapeRenderer.setProjectionMatrix(camera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
-            // Draw hitboxes for coins
-            for (Coin coin : cList) {
+            // Hitbox der Coins
+            for (Coin coin : coinList.getCoins()) {
                 Rectangle boundary = coin.getBoundary();
                 shapeRenderer.rect(boundary.x, boundary.y, boundary.width, boundary.height);
             }
 
-            // Draw hitbox for player
+            // Hitbox Spieler
+
             Rectangle playerBoundary = player.getCurrentFrameBoundary();
             shapeRenderer.rect(playerBoundary.x, playerBoundary.y, playerBoundary.width, playerBoundary.height);
-
             shapeRenderer.end();
+            */
+
         }
 
         //Prüft Eingabe auf esc-Taste
@@ -333,7 +296,8 @@ public class GameScreen2 implements Screen {
         }
     }
 
-    // Method to spawn new enemies
+
+
     private void spawnNewEnemy() {
         float initialX = Gdx.graphics.getWidth();
         float y = MathUtils.random(17, 250 - feindTextures[0].getHeight());
@@ -348,6 +312,13 @@ public class GameScreen2 implements Screen {
         Rockets rocket = new Rockets(initialX, y, new Texture("animations/rakete.png"));
         rocketList.add(rocket);
     }
+
+    private void spawnRocketAtPosition(float y) {
+        float initialX = Gdx.graphics.getWidth();
+        Rockets rocket = new Rockets(initialX, y, new Texture("animations/rakete.png"));
+        rocketList.add(rocket);
+    }
+
 
     public void pauseGame() {
         isPaused = true;
