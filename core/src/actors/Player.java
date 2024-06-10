@@ -34,7 +34,7 @@ public class Player {
     private float distanceTraveled = 0;
     Texture randomTex = new Texture("animations/laufen.png");
     private Sound playerrun;
-    private Sound jetpacksound;
+    private Sound playerfly;
     TextureRegion currentFrame = new TextureRegion(randomTex);
     private long lastPlayTime = 0;
     private float hitboxOffsetX = 30; // horizontal offset for hitbox
@@ -72,7 +72,7 @@ public class Player {
         playerVerticalVelocity = 0; // Initialgeschwindigkeit des Spielers in vertikaler Richtung
 
         playerrun = Gdx.audio.newSound(Gdx.files.internal("Sounds/playerrun.mp3"));
-        jetpacksound = Gdx.audio.newSound(Gdx.files.internal("Sounds/jetpacksound.mp3"));
+        playerfly = Gdx.audio.newSound(Gdx.files.internal("sounds/jetpack_jet_lp.wav"));
     }
 
     public boolean collideRectangle(Rectangle bshape) {
@@ -112,9 +112,18 @@ public class Player {
 
         if (isPlayerFlying && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             currentFrame = standAnimation.getKeyFrame(elapsedTime, true);
+            playerfly.stop();
         } else if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             currentFrame = flyingAnimation.getKeyFrame(elapsedTime, true);
             isPlayerFlying = true;
+
+            long currentTime = System.currentTimeMillis();
+
+            if (currentTime - lastPlayTime >= 150) {
+                playerfly.play();
+                lastPlayTime = currentTime; // Timer aktualisieren
+            }
+
         } else {
             currentFrame = walkingAnimation.getKeyFrame(elapsedTime, true);
         }

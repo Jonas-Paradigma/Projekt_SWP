@@ -110,6 +110,7 @@ public class GameScreen2 implements Screen {
          playerdie = Gdx.audio.newSound(Gdx.files.internal("sounds/playerdie.mp3"));
          playerrocket = Gdx.audio.newSound(Gdx.files.internal("sounds/playerrocket.mp3"));
 
+
         //Bilder
         playerTexture = new Texture("images/0.png");
         background = new Texture("images/Background_new.png");
