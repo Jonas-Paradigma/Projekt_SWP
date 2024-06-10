@@ -15,7 +15,7 @@ public class Feind {
     private Texture texture;
     private Rectangle boundary;
     private Polygon poly;
-    private final float speed = 4; // Fixed speed
+    private final float speed = 4; // fixierte Geschwindigkeit
 
     private float elapsedTime = 0.1f;
 
@@ -33,7 +33,7 @@ public class Feind {
 
     public void update(float delta) {
         elapsedTime += delta;
-        x -= speed * delta * 60; // Multiply by 60 to simulate pixels per second
+        x -= speed * delta * 60;
         boundary.setPosition(x, y);
         //currentFrame = zappyanimation.getKeyFrame(elapsedTime, true);
     }

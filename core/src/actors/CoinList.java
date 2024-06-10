@@ -34,7 +34,7 @@ public class CoinList {
         this.coinlist = new ArrayList<>();
         this.direction = direction;
         this.anzahlCoins = anzCoins;
-        generateCoins();  // Aufruf der Münzengenerierung beim Erstellen der Instanz
+        generateCoins();
     }
 
     public ArrayList<Coin> getCoins() {
@@ -50,34 +50,9 @@ public class CoinList {
         // ZUfalls höhe y
         int y = startY + (r.nextInt(5) + 0)*(coinHeight + ySpacing);
         for (int col = 0; col < coinsPerRow; col++) {
-            coinlist.add(new Coin(startX+(28*col), y, ih.changeImgSize(16, 16, "images/coin.png"), 4));
-        }
-/*
-        for (int row = 0; row < numRows; row++) {
-            int y = startY + row * (coinHeight + ySpacing);
-            int x = startX;
-
-            for (int col = 0; col < coinsPerRow; col++) {
-                Coin coin = new Coin(x, y, ih.changeImgSize(16, 16, "images/coin.png"), backgroundScrollSpeed);
-                // Überprüfung auf Überlappung mit vorhandenen Münzen
-                boolean overlapping = false;
-                for (Coin existingCoin : coinlist) {
-                    if (Intersector.overlaps(coin.getBoundary(), existingCoin.getBoundary())) {
-                        overlapping = true;
-                        break;
-                    }
-                }
-                // Münze nur hinzufügen, wenn keine Überlappung besteht
-                if (!overlapping) {
-                    coinlist.add(coin);
-                }
-                x += coinWidth + xSpacing;
-            }
-
-            startY += coinHeight + ySpacing + rowXSpacing;
+            coinlist.add(new Coin(startX+(25*col), y, ih.changeImgSize(16, 16, "images/coin.png"), 4));
         }
 
- */
     }
 
     public void render(SpriteBatch batch){
@@ -87,12 +62,12 @@ public class CoinList {
             coin.moveWithBackground();
             coin.draw(batch);
             System.out.println("X-wert" + coin.getX());
-            if (coin.getX() + coin.getWidth() < 0) {
+            if ((coin.getX() + coin.getWidth()) < 200) {
                 //
                 start = true;
             }
         }
-        if (start) {
+        if (start || coinlist.size() < 1) {
             coinlist.clear();
             generateCoins();
         }
@@ -101,10 +76,11 @@ public class CoinList {
         this.player = player;
         this.soundEffect = soundEffect;
 
-        for (Coin coin : coinlist) {
-            if (player.collideRectangle(coin.getBoundary())) {
-                coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
-                onCoinCollected.run(); // Callback, um die Anzahl der gesammelten Münzen zu erhöhen
+        for (int i= coinlist.size()-1; i>=0;i--) {
+            if (player.collideRectangle(coinlist.get(i).getBoundary())) {
+                //coin.setPosition(Gdx.graphics.getWidth(), coin.getY());
+                coinlist.remove(i);
+                onCoinCollected.run();
                 soundEffect.play();
             }
         }

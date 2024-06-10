@@ -78,6 +78,10 @@ public class GameScreen2 implements Screen {
     private CoinList coinList; // Liste der Münzen
     private int coinshitt = 0;
 
+    //Sounds und music
+    private Sound playerdie;
+    private Sound playerrocket;
+
 
     //Konstruktor
     public GameScreen2(Game aGame, boolean enableSound) {
@@ -104,6 +108,12 @@ public class GameScreen2 implements Screen {
             music.pause();
         }
 
+        //Sound
+        playerdie = Gdx.audio.newSound(Gdx.files.internal("sounds/playerdie.mp3"));
+        playerrocket = Gdx.audio.newSound(Gdx.files.internal("sounds/playerrocket.mp3"));
+
+
+        //Bilder
         background = new Texture("images/Background_new.png");
         camera = new OrthographicCamera(w, h);
         viewport = new FitViewport(w, h, camera);
@@ -121,23 +131,17 @@ public class GameScreen2 implements Screen {
         player = new Player(w / 2 - playerTexture.getWidth() / 2, 0, playerTexture);
         feindTexture = ih.changeImgSize(130, 40, "images/zappy.png");
 
-        // Initialisiere Feind-Texturen
         feindTextures = new Texture[]{
                 ih.changeImgSize(130, 40, "images/zappy.png"),
                 ih.changeImgSize(60, 120, "images/vertikal_zappy.png"),
         };
 
-        // Initial spawn interval and timer
-        spawnInterval = 3.0f; // Spawn an enemy every 2 seconds
+
+        spawnInterval = 4.5f; // Der Feind wird alle 4.5 Sekunden eingefügt
         spawnTimer = 0;
 
-        // Initialisiere Feind-Liste
         feindList = new ArrayList<>();
-
-        // Initialisiere Raketen-Liste
         rocketList = new ArrayList<>();
-
-        // Initialisiere Coin-Liste
         coinList = new CoinList(5, 1); // Beispiel: 25 Münzen, Richtung 1 (oder was auch immer die Richtung bedeutet)
 
         assetManager = new AssetManager();
@@ -156,7 +160,6 @@ public class GameScreen2 implements Screen {
     }
 
 
-    // Add this field to your class to track the last rocket spawn time
     private boolean rocketsSpawned = false;
 
     @Override
@@ -189,14 +192,13 @@ public class GameScreen2 implements Screen {
             // Zeige die Anzahl eingesammelter Münzen an
             font.draw(batch, "Coins: " + coinshitt, 320, 280);
 
-            // liste mit coins
             coinList.render(batch);
             System.out.println("Player" + player.getX());
+
             // Zeige die Distanz an
             int distance = player.getDistanceTraveled();
             font.draw(batch, "Distanz: " + distance + "m", 320, 255);
 
-            // Render und aktualisiere den Spieler
             batch.draw(player.getCurrentFrame(), player.getX(), player.getY());
             player.update(Gdx.graphics.getDeltaTime());
 
@@ -204,16 +206,14 @@ public class GameScreen2 implements Screen {
 
             batch.end();
 
-            totalElapsedTime += delta; // Gesamtzeit aktualisieren
+            totalElapsedTime += delta;
 
-            // Update the spawn timer and spawn new enemies if needed
             spawnTimer += delta;
             if (spawnTimer >= spawnInterval) {
                 spawnNewEnemy();
                 spawnTimer = 0;
             }
 
-            // Update and render enemies
             batch.begin();
             if (feindTextures != null) {
                 for (Feind feind : feindList) {
@@ -224,12 +224,13 @@ public class GameScreen2 implements Screen {
                         System.out.println("Collision");
                         game.setScreen(new TitleScreen(game));
                         music.stop();
+                        playerdie.play();
                     }
                 }
             }
             batch.end();
 
-            // Raketen erst nach 15 Sekunden spawnen und dann alle 10 Sekunden
+            // Raketen erst nach 15 Sekunden spawnen
             if (totalElapsedTime >= 4) {
                 rocketSpawnTimer += delta;
 
@@ -247,7 +248,7 @@ public class GameScreen2 implements Screen {
                     rocketsSpawned = false;
                 }
 
-                // Update and render rockets
+
                 batch.begin();
                 for (Rockets rocket : rocketList) {
                     rocket.update(delta);
@@ -256,30 +257,34 @@ public class GameScreen2 implements Screen {
                     if (player.collideRectangle(rocket.getBoundary())) {
                         game.setScreen(new TitleScreen(game));
                         music.stop();
+                        playerrocket.play();
                     }
                 }
                 batch.end();
             }
 
-            // Draw the player's hitbox
+            /*
+            //Hitbox des Spielers
             ShapeRenderer shapeRenderer = new ShapeRenderer();
             shapeRenderer.setProjectionMatrix(camera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
-            // Draw hitboxes for coins
+            // Hitbox der Coins
             for (Coin coin : coinList.getCoins()) {
                 Rectangle boundary = coin.getBoundary();
                 shapeRenderer.rect(boundary.x, boundary.y, boundary.width, boundary.height);
             }
 
-            // Draw hitbox for player
+            // Hitbox Spieler
+
             Rectangle playerBoundary = player.getCurrentFrameBoundary();
             shapeRenderer.rect(playerBoundary.x, playerBoundary.y, playerBoundary.width, playerBoundary.height);
-
             shapeRenderer.end();
+            */
+
         }
 
-        // Prüft Eingabe auf ESC-Taste
+        //Prüft Eingabe auf esc-Taste
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             isPaused = !isPaused;
             if (isPaused) {
@@ -293,8 +298,6 @@ public class GameScreen2 implements Screen {
 
 
 
-
-    // Method to spawn new enemies
     private void spawnNewEnemy() {
         float initialX = Gdx.graphics.getWidth();
         float y = MathUtils.random(17, 250 - feindTextures[0].getHeight());
@@ -325,6 +328,9 @@ public class GameScreen2 implements Screen {
 
     public void resumeGame() {
         Gdx.app.log("GameScreen2", "Spiel fortgesetzt");
+        if (soundEnabled) {
+            music.play();
+        }
     }
 
 
@@ -352,6 +358,8 @@ public class GameScreen2 implements Screen {
         music.dispose();
         batch.dispose();
         background.dispose();
+        playerdie.dispose();
+        playerrocket.dispose();
         soundEffect.dispose();
         for (Texture texture : feindTextures) {
             texture.dispose();

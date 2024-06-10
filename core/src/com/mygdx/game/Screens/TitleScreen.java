@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -23,11 +22,9 @@ public class TitleScreen implements Screen {
     private Game game;
     private Texture backgroundImage;
     private SpriteBatch batch;
-    private int lastDistance; // Variable zur Anzeige der letzten erreichten Distanz
 
     public TitleScreen(Game aGame) {
         game = aGame;
-        this.lastDistance = lastDistance; // Speichern der letzten erreichten Distanz
         stage = new Stage(new ScreenViewport());
         batch = new SpriteBatch();
 
@@ -35,6 +32,7 @@ public class TitleScreen implements Screen {
 
         imageHelper ih = new imageHelper();
 
+        //Play Button
         Texture startTexture = ih.changeImgSize(255, 100, "images/play.png");
         ImageButton.ImageButtonStyle startStyle = new ImageButton.ImageButtonStyle();
         startStyle.imageUp = new TextureRegionDrawable(new TextureRegion(startTexture));
@@ -54,6 +52,7 @@ public class TitleScreen implements Screen {
         });
         stage.addActor(startButton);
 
+        //Options Button
         Texture optionTexture = ih.changeImgSize(255, 100, "images/options.png");
         ImageButton.ImageButtonStyle optionStyle = new ImageButton.ImageButtonStyle();
         optionStyle.imageUp = new TextureRegionDrawable(new TextureRegion(optionTexture));
@@ -103,9 +102,6 @@ public class TitleScreen implements Screen {
 
         batch.begin();
         batch.draw(backgroundImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        // Anzeige der letzten erreichten Distanz
-        BitmapFont font = new BitmapFont();
-        //font.draw(batch, "Last Distance: " + lastDistance + "m", 20, Gdx.graphics.getHeight() - 20);
         batch.end();
 
         stage.act();
