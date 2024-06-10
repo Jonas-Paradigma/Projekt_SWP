@@ -26,7 +26,7 @@ public class Feind {
         this.x = x;
         this.y = y;
         this.texture = texture;
-        this.boundary = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
+        this.boundary = new Rectangle(x, y,  texture.getWidth(), texture.getHeight());
 
 
     }
