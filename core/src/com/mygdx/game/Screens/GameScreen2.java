@@ -133,7 +133,7 @@ public class GameScreen2 implements Screen {
 
         feindTextures = new Texture[]{
                 ih.changeImgSize(130, 40, "images/zappy.png"),
-                ih.changeImgSize(60, 120, "images/vertikal_zappy.png"),
+                ih.changeImgSize(45, 110, "images/vertikal_zappy.png"),
         };
 
 

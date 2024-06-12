@@ -81,7 +81,7 @@ public class Player {
         playerVerticalVelocity = 0;
 
         playerrun = Gdx.audio.newSound(Gdx.files.internal("Sounds/playerrun.mp3"));
-        playerfly = Gdx.audio.newSound(Gdx.files.internal("sounds/jetpack_jet_lp.wav"));
+        playerfly = Gdx.audio.newSound(Gdx.files.internal("sounds/jetpack_firelp.wav"));
     }
 
 
