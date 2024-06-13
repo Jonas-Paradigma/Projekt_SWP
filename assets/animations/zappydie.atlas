@@ -1,0 +1,15 @@
+zappydie.png
+size:512,128
+repeat:none
+zappydie
+index:1
+bounds:2,2,64,64
+zappydie
+index:3
+bounds:68,2,64,64
+zappydie
+index:2
+bounds:134,2,64,64
+zappydie
+index:4
+bounds:200,2,64,64
