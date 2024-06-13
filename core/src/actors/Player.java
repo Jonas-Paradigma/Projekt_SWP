@@ -50,20 +50,34 @@ public class Player {
     private Sound playerrun;
     private Sound playerfly;
     private long lastPlayTime = 0;
+    private boolean isAliverocket;
+    private boolean isAlivezappy;
 
 
+    private Animation<TextureRegion> rocketdieanimation;
+    private TextureAtlas rocketdieAtlas;
+
+
+    private Animation<TextureRegion> zappydieanimation;
+    private TextureAtlas zappydieAtlas;
+
+
+    private TextureAtlas rocketdie2Atlas;
+    private Animation<TextureRegion> rockdie2Animation;
     public Player(float x, float y, Texture image) {
         this.x = x;
         this.y = y;
         this.width = image.getWidth();
         this.height = image.getHeight();
         this.playerTexture = image;
+        isAliverocket = true;
+        isAlivezappy = true;
         boundary = new Rectangle(x, y, (float) (width/7), height/5);
 
         // Atlas für Laufanimation
         walkingAtlas = new TextureAtlas(Gdx.files.internal("animations/laufen.atlas"));
         Array<TextureAtlas.AtlasRegion> walkingFrames = walkingAtlas.findRegions("mainwalk");
-        walkingAnimation = new Animation<>(0.09f, walkingFrames, Animation.PlayMode.LOOP);
+        walkingAnimation = new Animation<>(0.2f, walkingFrames, Animation.PlayMode.LOOP);
 
         // Atlas für Fluganimation
         flyingAtlas = new TextureAtlas(Gdx.files.internal("animations/mainfly.atlas"));
@@ -84,7 +98,6 @@ public class Player {
         playerfly = Gdx.audio.newSound(Gdx.files.internal("sounds/jetpack_jet_lp.wav"));
     }
 
-
     public boolean collideRectangle(Rectangle bshape) {
         if (Intersector.overlaps(this.boundary, bshape)) {
             return true;
@@ -93,8 +106,28 @@ public class Player {
         }
     }
 
-
     public void update(float delta) {
+        elapsedTime += delta;
+
+        if (!isAliverocket) {
+            // If the player is dead, apply gravity and play death animation
+            playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime(); // Gravity effect
+            currentFrame = rocketdieanimation.getKeyFrame(elapsedTime, false); // Death animation
+            this.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
+            if (this.y <= 17) {
+                this.y = 17;
+                playerVerticalVelocity = 0;
+            }
+            updateBoundary();
+            return;
+        } else if (!isAlivezappy) {
+            playerVerticalVelocity -= 650 * Gdx.graphics.getDeltaTime(); // Gravity effect
+            currentFrame = zappydieanimation.getKeyFrame(elapsedTime, true); // Death animation
+            this.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
+            updateBoundary();
+            return;
+        }
+
         elapsedTime += delta;
 
         this.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
@@ -153,6 +186,29 @@ public class Player {
         updateBoundary();
     }
 
+    public boolean rocketdie() {
+        isAliverocket = false;
+        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
+        rocketdieAtlas = new TextureAtlas(Gdx.files.internal("animations/rocketdie.atlas"));
+        Array<TextureAtlas.AtlasRegion> rocketdieFrames = rocketdieAtlas.findRegions("rocketdie");
+        rocketdieanimation = new Animation<>(0.12f, rocketdieFrames);
+        elapsedTime = 0;
+        return false;
+    }
+
+    public void zappydie() {
+        isAlivezappy = false;
+        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
+        zappydieAtlas = new TextureAtlas(Gdx.files.internal("animations/zappydie.atlas"));
+        Array<TextureAtlas.AtlasRegion> zappydieFrames = zappydieAtlas.findRegions("zappydie");
+        zappydieanimation = new Animation<>(0.09f, zappydieFrames);
+        elapsedTime = 0;
+    }
+    public void rocketdie2(){
+        rocketdie2Atlas = new TextureAtlas(Gdx.files.internal("animations/rakete.atlas"));
+        Array<TextureAtlas.AtlasRegion> rocketdie2Frames = rocketdie2Atlas.findRegions("rakete");
+        rockdie2Animation = new Animation<>(0.09f, rocketdie2Frames);
+    }
 
     public boolean collidesWith(Rectangle shape) {
         return Intersector.overlaps(this.boundary, shape);
@@ -162,8 +218,6 @@ public class Player {
         TextureRegion currentFrame = getCurrentFrame();
         return new Rectangle(getX() + hitboxOffsetX, getY() + hitboxOffsetY, hitboxWidth, hitboxHeight);
     }
-
-
 
     public float getX() {
         return x;
@@ -205,9 +259,6 @@ public class Player {
         boundary.set(x, y, width, height);
     }
 
-
-
-
     public void act(float delta) {
 
     }
@@ -220,4 +271,11 @@ public class Player {
         return (int) distanceTraveled;
     }
 
+    public boolean isAliverocket() {
+        return this.isAliverocket;
+    }
+
+    public boolean isAlivezappy() {
+        return this.isAlivezappy;
+    }
 }
