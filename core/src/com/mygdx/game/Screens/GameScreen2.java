@@ -262,12 +262,13 @@ public class GameScreen2 implements Screen {
                     rocket.draw(batch);
 
                     if (!playerDiedByRocket && player.collideRectangle(rocket.getBoundary())) {
-                        player.rocketdie();
+                        player.rocketdie2();
                         music.stop();
                         playerrocket.play();
                         playerDiedByRocket = true;
                         this.timeSinceDeath = 0;
                     }
+
                 }
 
 

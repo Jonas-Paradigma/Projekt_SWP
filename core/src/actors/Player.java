@@ -204,10 +204,14 @@ public class Player {
         zappydieanimation = new Animation<>(0.09f, zappydieFrames);
         elapsedTime = 0;
     }
-    public void rocketdie2(){
-        rocketdie2Atlas = new TextureAtlas(Gdx.files.internal("animations/rakete.atlas"));
-        Array<TextureAtlas.AtlasRegion> rocketdie2Frames = rocketdie2Atlas.findRegions("rakete");
-        rockdie2Animation = new Animation<>(0.09f, rocketdie2Frames);
+    public boolean rocketdie2() {
+        isAliverocket = false;
+        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
+        rocketdie2Atlas = new TextureAtlas(Gdx.files.internal("animations/rocketdie2.atlas"));
+        Array<TextureAtlas.AtlasRegion> rocketdieFrames = rocketdieAtlas.findRegions("rocketdie");
+        rocketdieanimation = new Animation<>(0.12f, rocketdieFrames);
+        elapsedTime = 0;
+        return false;
     }
 
     public boolean collidesWith(Rectangle shape) {
