@@ -16,16 +16,11 @@ public class CoinList {
     private float backgroundScrollSpeed;
     private int coinWidth = 16;
     private int coinHeight = 16;
-
     private int coinsPerRow = 5;
     private int numRows = 1;
-
     private int ySpacing = 10;
-
     private int startX = 1750;
     private int startY = 50;
-
-
     private Player player;
     private int coinshitt = 0;
     private Sound soundEffect;
@@ -85,6 +80,4 @@ public class CoinList {
             }
         }
     }
-
-
 }

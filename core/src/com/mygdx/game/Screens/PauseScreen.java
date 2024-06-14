@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import helper.imageHelper;
 
-
 public class PauseScreen implements Screen {
     private Stage stage;
     private Game game;

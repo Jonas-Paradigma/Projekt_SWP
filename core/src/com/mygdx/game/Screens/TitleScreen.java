@@ -17,7 +17,6 @@ import com.mygdx.game.ScreenGame;
 import helper.imageHelper;
 
 public class TitleScreen implements Screen {
-
     private Stage stage;
     private Game game;
     private Texture backgroundImage;

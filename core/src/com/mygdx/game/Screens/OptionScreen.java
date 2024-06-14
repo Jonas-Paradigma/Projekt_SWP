@@ -17,7 +17,6 @@ import com.mygdx.game.ScreenGame;
 import helper.imageHelper;
 
 public class OptionScreen implements Screen {
-
     private Stage stage;
     private Game game;
     private Texture backgroundImage;
@@ -32,6 +31,7 @@ public class OptionScreen implements Screen {
 
         backgroundImage = new Texture("images/optionsscreen.png");
 
+        //Music on Button
         Texture musicOnTexture = ih.changeImgSize(255, 100, "images/music on.png");
         ImageButton.ImageButtonStyle musicOnStyle = new ImageButton.ImageButtonStyle();
         musicOnStyle.imageUp = new TextureRegionDrawable(new TextureRegion(musicOnTexture));
@@ -49,6 +49,7 @@ public class OptionScreen implements Screen {
         });
         stage.addActor(musicOnButton);
 
+        //Music Off Button
         Texture musicOffTexture = ih.changeImgSize(255, 100, "images/music off.png");
         ImageButton.ImageButtonStyle musicOffStyle = new ImageButton.ImageButtonStyle();
         musicOffStyle.imageUp = new TextureRegionDrawable(new TextureRegion(musicOffTexture));
@@ -65,7 +66,6 @@ public class OptionScreen implements Screen {
             }
         });
         stage.addActor(musicOffButton);
-
 
         //Back Button
         Texture backTexture = ih.changeImgSize(255, 100, "images/back.png");

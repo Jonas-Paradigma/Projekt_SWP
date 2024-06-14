@@ -19,7 +19,6 @@ public abstract class Spielobjekt extends Actor {
         this.image.setY(y);
     }
 
-
     @Override
     public void act(float dt) {
         super.act(dt);

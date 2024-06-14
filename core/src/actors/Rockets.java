@@ -15,7 +15,6 @@ public class Rockets {
     private Rectangle boundary;
     private float elapsedTime = 0.1f;
     private final float speed = 5.5f; // Fixed speed
-
     private TextureAtlas raketenAtlas;
     private Animation<TextureRegion> raketenAnimation;
     private TextureRegion currentFrame;

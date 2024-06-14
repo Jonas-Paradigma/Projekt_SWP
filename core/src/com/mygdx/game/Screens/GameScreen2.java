@@ -52,7 +52,6 @@ public class GameScreen2 implements Screen {
     private boolean initialized;
     private int screenHeight;
     private boolean gameStarted;
-
     private Player player;
     BitmapFont font;
     private Sound soundEffect;
@@ -64,24 +63,17 @@ public class GameScreen2 implements Screen {
     private boolean isPaused = false;
     private Texture feindTexture;
     private ArrayList<Feind> feindList; // List to store enemies
-
-    // Neue Felder für Feind-Spawn und Texturen
     private float spawnTimer;
     private float spawnInterval;
     private Texture[] feindTextures;
-
-    // Neue Felder für Raketen-Spawn
     private ArrayList<Rockets> rocketList; // Liste zur Speicherung von Raketen
     private float rocketSpawnTimer = 0;
     private float rocketSpawnInterval = 3.0f; // Intervall für Raketen-Spawn
     private float totalElapsedTime = 0; // Gesamtzeit seit Spielbeginn
     private CoinList coinList; // Liste der Münzen
     private int coinshitt = 0;
-
-    //Sounds und music
     private Sound playerdie;
     private Sound playerrocket;
-
 
     //Konstruktor
     public GameScreen2(Game aGame, boolean enableSound) {
@@ -150,7 +142,6 @@ public class GameScreen2 implements Screen {
         soundEffect = assetManager.get("Sounds/Coin.mp3", Sound.class);
     }
 
-
     @Override
     public void show() {
     }
@@ -158,7 +149,6 @@ public class GameScreen2 implements Screen {
     public void setPaused(boolean paused) {
         isPaused = paused;
     }
-
 
     private boolean rocketsSpawned = false;
 
@@ -296,8 +286,6 @@ public class GameScreen2 implements Screen {
         }
     }
 
-
-
     private void spawnNewEnemy() {
         float initialX = Gdx.graphics.getWidth();
         float y = MathUtils.random(17, 250 - feindTextures[0].getHeight());
@@ -319,7 +307,6 @@ public class GameScreen2 implements Screen {
         rocketList.add(rocket);
     }
 
-
     public void pauseGame() {
         isPaused = true;
         music.pause();
@@ -332,7 +319,6 @@ public class GameScreen2 implements Screen {
             music.play();
         }
     }
-
 
     @Override
     public void resize(int width, int height) {

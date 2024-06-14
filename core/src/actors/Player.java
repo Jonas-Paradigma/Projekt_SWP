@@ -13,44 +13,33 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class Player {
-
     private Rectangle boundary;
     private float x;
     private float y;
     private float width;
     private float height;
-
     private TextureAtlas walkingAtlas;
     private TextureAtlas flyingAtlas;
     private TextureAtlas standAtlas;
     private Animation<TextureRegion> walkingAnimation;
     private Animation<TextureRegion> flyingAnimation;
     private Animation<TextureRegion> standAnimation;
-
     private Texture playerTexture;
     private boolean isPlayerFlying;
-
     private float playerVerticalVelocity; // Geschwindigkeit des Spielers in vertikaler Richtung
-
     private float elapsedTime = 0.1f;
     float w = Gdx.graphics.getWidth();
     private SpriteBatch batch;
-
     private float distanceTraveled = 0;
-
     Texture randomTex = new Texture("animations/laufen.png");
-
     TextureRegion currentFrame = new TextureRegion(randomTex);
-
     private float hitboxOffsetX = 30;
     private float hitboxOffsetY = 10;
     private float hitboxWidth = 20;
     private float hitboxHeight = 20;
-
     private Sound playerrun;
     private Sound playerfly;
     private long lastPlayTime = 0;
-
 
     public Player(float x, float y, Texture image) {
         this.x = x;
@@ -80,10 +69,11 @@ public class Player {
         isPlayerFlying = false;
         playerVerticalVelocity = 0;
 
+
+
         playerrun = Gdx.audio.newSound(Gdx.files.internal("Sounds/playerrun.mp3"));
         playerfly = Gdx.audio.newSound(Gdx.files.internal("sounds/jetpack_firelp.wav"));
     }
-
 
     public boolean collideRectangle(Rectangle bshape) {
         if (Intersector.overlaps(this.boundary, bshape)) {
@@ -92,7 +82,6 @@ public class Player {
             return false;
         }
     }
-
 
     public void update(float delta) {
         elapsedTime += delta;
@@ -153,7 +142,6 @@ public class Player {
         updateBoundary();
     }
 
-
     public boolean collidesWith(Rectangle shape) {
         return Intersector.overlaps(this.boundary, shape);
     }
@@ -162,8 +150,6 @@ public class Player {
         TextureRegion currentFrame = getCurrentFrame();
         return new Rectangle(getX() + hitboxOffsetX, getY() + hitboxOffsetY, hitboxWidth, hitboxHeight);
     }
-
-
 
     public float getX() {
         return x;
@@ -205,11 +191,7 @@ public class Player {
         boundary.set(x, y, width, height);
     }
 
-
-
-
     public void act(float delta) {
-
     }
 
     public TextureRegion getCurrentFrame() {

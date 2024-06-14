@@ -16,19 +16,16 @@ import java.util.Random;
 public class Coin extends Spielobjekt{
     private float speed;
     private Rectangle boundary;
-
     private TextureAtlas coinAtlas;
     private Animation<TextureRegion> coinAnimation;
     private float animationTime;
     private boolean playCoinAnimation;
-
 
     public Coin(int x, int y, Texture texture, float backgroundScrollSpeed) {
         super(x,y,texture);
         this.speed = backgroundScrollSpeed ;
         boundary = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
     }
-
 
     public boolean collideRectangle(Rectangle shape) {
         if(Intersector.overlaps(this.boundary, shape)){
@@ -37,7 +34,6 @@ public class Coin extends Spielobjekt{
             return false;
         }
     }
-
 
     public void draw(Batch batch) {
         batch.draw(this.getImage(), this.getX(), this.getY());
@@ -63,6 +59,4 @@ public class Coin extends Spielobjekt{
         // Hier können zusätzliche Aktionen für die Münzen implementiert werden
         moveWithBackground();
     }
-
-
 }

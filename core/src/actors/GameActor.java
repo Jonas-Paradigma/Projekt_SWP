@@ -1,6 +1,5 @@
 package actors;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,15 +9,10 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 
-
 public class GameActor extends Spielobjekt {
-
     private int direction =0;
-
     private double geschwindigkeit = 2;
     private double beschleunigung = 0.1;
-
-
     private Circle circle;
 
     public GameActor(int x, int y, String image) {

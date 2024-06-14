@@ -16,10 +16,7 @@ public class Feind {
     private Rectangle boundary;
     private Polygon poly;
     private final float speed = 4; // fixierte Geschwindigkeit
-
     private float elapsedTime = 0.1f;
-
-
     TextureRegion currentFrame = new TextureRegion();
 
     public Feind(float x, float y, Texture texture) {
@@ -40,7 +37,6 @@ public class Feind {
 
     public void draw(SpriteBatch batch) {
         batch.draw(texture,this.x, this.y);
-        //batch.draw(currentFrame, x, y);
     }
 
     public Rectangle getBoundary() {
