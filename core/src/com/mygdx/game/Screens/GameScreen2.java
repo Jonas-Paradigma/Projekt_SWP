@@ -90,6 +90,7 @@ public class GameScreen2 implements Screen {
 
     private boolean playerDiedByZappy = false;
     private boolean playerDiedByRocket = false;
+    private ShapeRenderer shapeRenderer;
 
 
 
@@ -130,6 +131,7 @@ public class GameScreen2 implements Screen {
         camera = new OrthographicCamera(w, h);
         viewport = new FitViewport(w, h, camera);
         batch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
 
         backgroundScrollSpeed = 2;
         gameStarted = false;
@@ -149,7 +151,7 @@ public class GameScreen2 implements Screen {
         };
 
 
-        spawnInterval = 4.5f; // Der Feind wird alle 4.5 Sekunden eingefügt
+        spawnInterval = 2.5f; // Der Feind wird alle 4.5 Sekunden eingefügt
         spawnTimer = 0;
 
         feindList = new ArrayList<>();
@@ -286,6 +288,25 @@ public class GameScreen2 implements Screen {
 
         batch.end();
 
+/*
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setColor(1, 0, 0, 1); // Red color for hitboxes
+
+        for (Feind feind : feindList) {
+            Rectangle hitbox = feind.getBoundary();
+            shapeRenderer.rect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+        }
+        // Draw hitboxes for rockets
+        for (Rockets rocket : rocketList) {
+            Rectangle hitbox = rocket.getBoundary();
+            shapeRenderer.rect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+        }
+
+        shapeRenderer.end();
+        */
+
+
         // Prüfen auf Eingabe und Pause
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             isPaused = !isPaused;
@@ -359,6 +380,7 @@ public class GameScreen2 implements Screen {
     public void dispose() {
         music.dispose();
         batch.dispose();
+        shapeRenderer.dispose();
         background.dispose();
         playerdie.dispose();
         playerrocket.dispose();
