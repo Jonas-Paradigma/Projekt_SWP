@@ -54,16 +54,21 @@ public class Player {
     private boolean isAlivezappy;
 
 
-    private Animation<TextureRegion> rocketdieanimation;
+   private Animation<TextureRegion> rocketdieAnimation;
     private TextureAtlas rocketdieAtlas;
 
 
     private Animation<TextureRegion> zappydieanimation;
     private TextureAtlas zappydieAtlas;
 
+    private Animation<TextureRegion> zappydie2animation;
+    private TextureAtlas zappydie2Atlas;
+
 
     private TextureAtlas rocketdie2Atlas;
-    private Animation<TextureRegion> rockdie2Animation;
+    private Animation<TextureRegion> rocketdie2Animation;
+
+
     public Player(float x, float y, Texture image) {
         this.x = x;
         this.y = y;
@@ -96,6 +101,48 @@ public class Player {
 
         playerrun = Gdx.audio.newSound(Gdx.files.internal("Sounds/playerrun.mp3"));
         playerfly = Gdx.audio.newSound(Gdx.files.internal("sounds/jetpack_jet_lp.wav"));
+
+
+
+        rocketdieAtlas = new TextureAtlas(Gdx.files.internal("animations/rocketdie.atlas"));
+        Array<TextureAtlas.AtlasRegion> rocketdieFrames = rocketdieAtlas.findRegions("rocketdie");
+        rocketdieAnimation = new Animation<>(0.12f, rocketdieFrames);
+
+
+        rocketdie2Atlas = new TextureAtlas(Gdx.files.internal("animations/rocketdie2.atlas"));
+        Array<TextureAtlas.AtlasRegion> rocketdie2Frames = rocketdie2Atlas.findRegions("Deathanimation_2");
+        rocketdie2Animation = new Animation<>(0.12f, rocketdie2Frames);
+
+
+        zappydieAtlas = new TextureAtlas(Gdx.files.internal("animations/zappydie.atlas"));
+        Array<TextureAtlas.AtlasRegion> zappydieFrames = zappydieAtlas.findRegions("zappydie");
+        zappydieanimation = new Animation<>(0.09f, zappydieFrames);
+
+        zappydie2Atlas = new TextureAtlas(Gdx.files.internal("animations/mainroll.atlas"));
+        Array<TextureAtlas.AtlasRegion> zappydie2Frames = zappydie2Atlas.findRegions("mainroll");
+        zappydie2animation = new Animation<>(0.15f, zappydie2Frames);
+    }
+    public void rocketdie() {
+        isAliverocket = false;
+        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
+        elapsedTime = 0;
+    }
+    public void rocketdie2() {
+        isAliverocket = false;
+        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
+        elapsedTime = 0;
+    }
+
+    public void zappydie() {
+        isAlivezappy = false;
+        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
+        elapsedTime = 0;
+    }
+
+    public void zappy2die() {
+        isAlivezappy = false;
+        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
+        elapsedTime = 0;
     }
 
     public boolean collideRectangle(Rectangle bshape) {
@@ -110,20 +157,25 @@ public class Player {
         elapsedTime += delta;
 
         if (!isAliverocket) {
-            // If the player is dead, apply gravity and play death animation
-            playerVerticalVelocity -= 500 * Gdx.graphics.getDeltaTime(); // Gravity effect
-            currentFrame = rocketdieanimation.getKeyFrame(elapsedTime, false); // Death animation
+            playerVerticalVelocity -= 350 * Gdx.graphics.getDeltaTime(); // Gravity effect
+            currentFrame = rocketdieAnimation.getKeyFrame(elapsedTime, false); // Death animation
             this.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
             if (this.y <= 17) {
                 this.y = 17;
                 playerVerticalVelocity = 0;
+                currentFrame = rocketdie2Animation.getKeyFrame(elapsedTime,false);
             }
             updateBoundary();
             return;
         } else if (!isAlivezappy) {
-            playerVerticalVelocity -= 650 * Gdx.graphics.getDeltaTime(); // Gravity effect
+            playerVerticalVelocity -= 350 * Gdx.graphics.getDeltaTime(); // Gravity effect
             currentFrame = zappydieanimation.getKeyFrame(elapsedTime, true); // Death animation
             this.y += playerVerticalVelocity * Gdx.graphics.getDeltaTime();
+            if (this.y <= 17) {
+                this.y = 17;
+                playerVerticalVelocity = 0;
+                currentFrame = zappydie2animation.getKeyFrame(elapsedTime,false);
+            }
             updateBoundary();
             return;
         }
@@ -186,33 +238,10 @@ public class Player {
         updateBoundary();
     }
 
-    public boolean rocketdie() {
-        isAliverocket = false;
-        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
-        rocketdieAtlas = new TextureAtlas(Gdx.files.internal("animations/rocketdie.atlas"));
-        Array<TextureAtlas.AtlasRegion> rocketdieFrames = rocketdieAtlas.findRegions("rocketdie");
-        rocketdieanimation = new Animation<>(0.12f, rocketdieFrames);
-        elapsedTime = 0;
-        return false;
-    }
 
-    public void zappydie() {
-        isAlivezappy = false;
-        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
-        zappydieAtlas = new TextureAtlas(Gdx.files.internal("animations/zappydie.atlas"));
-        Array<TextureAtlas.AtlasRegion> zappydieFrames = zappydieAtlas.findRegions("zappydie");
-        zappydieanimation = new Animation<>(0.09f, zappydieFrames);
-        elapsedTime = 0;
-    }
-    public boolean rocketdie2() {
-        isAliverocket = false;
-        playerVerticalVelocity = 0; // Vertikale Geschwindigkeit zurücksetzen
-        rocketdie2Atlas = new TextureAtlas(Gdx.files.internal("animations/rocketdie2.atlas"));
-        Array<TextureAtlas.AtlasRegion> rocketdieFrames = rocketdieAtlas.findRegions("rocketdie");
-        rocketdieanimation = new Animation<>(0.12f, rocketdieFrames);
-        elapsedTime = 0;
-        return false;
-    }
+
+
+
 
     public boolean collidesWith(Rectangle shape) {
         return Intersector.overlaps(this.boundary, shape);
