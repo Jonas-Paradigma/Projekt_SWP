@@ -15,9 +15,11 @@ public class Rockets {
     private Rectangle boundary;
     private float elapsedTime = 0.1f;
     private final float speed = 5.5f; // Fixed speed
+
     private TextureAtlas raketenAtlas;
     private Animation<TextureRegion> raketenAnimation;
     private TextureRegion currentFrame;
+
 
     public Rockets(float x, float y, Texture image) {
         this.x = x;
@@ -33,11 +35,13 @@ public class Rockets {
         currentFrame = raketenAnimation.getKeyFrame(elapsedTime, true);
     }
 
+
     public void update(float delta) {
         x -= speed * delta * 60;
         boundary.setPosition(x, y);
         elapsedTime += delta;
         currentFrame = raketenAnimation.getKeyFrame(elapsedTime, true);
+
     }
 
     public void draw(SpriteBatch batch) {
@@ -46,5 +50,11 @@ public class Rockets {
 
     public Rectangle getBoundary() {
         return boundary;
+    }
+
+
+
+    public float getY() {
+        return y;
     }
 }
