@@ -149,7 +149,7 @@ public class GameScreen2 implements Screen {
         };
 
 
-        spawnInterval = 4.5f; // Der Feind wird alle 4.5 Sekunden eingefügt
+        spawnInterval = 2.5f; // Der Feind wird alle 4.5 Sekunden eingefügt
         spawnTimer = 0;
 
         feindList = new ArrayList<>();
