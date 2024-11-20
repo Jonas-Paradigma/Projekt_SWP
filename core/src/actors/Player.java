@@ -120,7 +120,7 @@ public class Player {
 
         zappydie2Atlas = new TextureAtlas(Gdx.files.internal("animations/mainroll.atlas"));
         Array<TextureAtlas.AtlasRegion> zappydie2Frames = zappydie2Atlas.findRegions("mainroll");
-        zappydie2animation = new Animation<>(0.15f, zappydie2Frames);
+        zappydie2animation = new Animation<>(0.3f, zappydie2Frames);
     }
     public void rocketdie() {
         isAliverocket = false;
